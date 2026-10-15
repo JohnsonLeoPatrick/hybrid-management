@@ -59,7 +59,9 @@ Tests cover expiry boundaries, month-end/leap-year renewal calculation, member n
 
 ## Vercel deployment
 
-Import this repository into Vercel, select Next.js and set both public Supabase environment variables for Production and Preview. Deploy with the default `npm run build`. Set your Supabase Auth Site URL to your deployed origin and allow the relevant redirect URLs. No application service key or custom server is required. Database schema changes must be applied to Supabase separately before the web deployment.
+Import this repository into Vercel and select Next.js. This gym's public project URL and publishable key are included in `.env.production`, which Next.js loads during the production build. These two values are intended for browser applications; authorization is enforced through Supabase Authentication and RLS. Never add database passwords, service-role keys or secret keys to this file. `.env.local` remains ignored.
+
+Hosting environment variables override the committed public defaults. If the host already has incorrect or blank values for these variables, correct or remove those overrides. Deploy with the default `npm run build`; changes to public environment variables require a new build. A new Git push triggers a deployment only if Git deployments are configured on the host. Set your Supabase Auth Site URL to your deployed origin and allow the relevant redirect URLs. No application service key or custom server is required. Database schema changes must be applied to Supabase separately before the web deployment.
 
 ## Structure
 
