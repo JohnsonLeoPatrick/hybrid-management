@@ -4,7 +4,7 @@ Responsive Next.js App Router, TypeScript, Tailwind CSS and Supabase membership 
 
 ## Run locally
 
-Use Node.js 20.9 or newer:
+Use Node.js 20.12 or newer:
 
 ```sh
 npm install
@@ -17,11 +17,13 @@ On Windows PowerShell where script execution is disabled, use `npm.cmd` instead 
 
 ## Supabase setup
 
-1. Create a Supabase project. Run `supabase/schema.sql` once in the SQL editor, then run `supabase/002_academy_pricing.sql` to install the academy's advertised plans and schedules. Existing installations should run only `002_academy_pricing.sql`.
-2. Copy `.env.example` to `.env.local`. Set `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` from your project's API settings. Only the public anon/publishable key belongs here. No service-role key is used.
+1. Create a Supabase project. For a new empty database, run `supabase/START_HERE.sql` once in the SQL editor. It combines the schema, permissions and academy pricing. Alternatively, run `supabase/schema.sql` followed by `supabase/002_academy_pricing.sql`. Do not run both setup methods against the same database. Existing installations needing the pricing update should run only `002_academy_pricing.sql`.
+2. Copy `.env.example` to `.env.local`. Set `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` from your project's Connect dialog. The legacy `NEXT_PUBLIC_SUPABASE_ANON_KEY` is supported as a fallback. Only a public publishable/anon key belongs here. No service-role key is used. `.env.local` is excluded from Git and must be configured separately on each installation.
 3. Create your first staff user in Supabase Authentication. Copy the user's UUID and run the bootstrap INSERT at the bottom of the schema with your own name and email. Keep public self-signup disabled for this staff application.
 4. Restart Next.js. Sign in with that account. Live mode starts with the DD branch, advertised class plans and no fabricated member records. Review capacity and class end times, then register or import members. Prices: RM170/month for Boxing, Kickboxing, MMA, Muay Thai, Tae Kwon Do (ITF) and Brazilian Jiu-Jitsu; RM190/month for Jeet Kune Do & Kali. Body Building and Arm Wrestling are enquiries because no price was supplied. End times and unlisted coaches are left unconfirmed; class capacity starts at an editable default of 24.
 5. To add staff, create their Auth account in Supabase, then use Staff → Grant access with their UUID. This avoids exposing privileged Auth administration credentials to the browser. Supabase handles password reset/account recovery through its configured Auth flows; the app currently provides password sign-in and sign-out.
+
+Run `node scripts/check-supabase.mjs` to check the configured project's authentication endpoint and anonymous table responses without printing keys or member records. Empty results on an empty table alone do not prove RLS is correct; verify signed-in role permissions and save/reload a test member before operational use.
 
 ## Features
 
