@@ -12,9 +12,12 @@ test('a clean production checkout loads only public Supabase settings without .e
     const { loadedEnvFiles, parsedEnv } = loadEnvConfig(directory, false, undefined, true);
     assert.deepEqual(loadedEnvFiles.map(file => file.path), ['.env.production']);
     assert.deepEqual(Object.keys(parsedEnv || {}).sort(), ['NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY', 'NEXT_PUBLIC_SUPABASE_URL']);
-    assert.ok(parsedEnv?.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY.startsWith('sb_publishable_'));
-    assert.equal(new URL(parsedEnv!.NEXT_PUBLIC_SUPABASE_URL).protocol, 'https:');
-    assert.equal(new URL(parsedEnv!.NEXT_PUBLIC_SUPABASE_URL).hostname, 'whcvxpncictpahscvrqe.supabase.co');
+    const publicKey = parsedEnv?.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+    const projectUrl = parsedEnv?.NEXT_PUBLIC_SUPABASE_URL;
+    assert.ok(publicKey?.startsWith('sb_publishable_'));
+    assert.ok(projectUrl);
+    assert.equal(new URL(projectUrl).protocol, 'https:');
+    assert.equal(new URL(projectUrl).hostname, 'whcvxpncictpahscvrqe.supabase.co');
   } finally {
     rmSync(directory, { recursive: true, force: true });
   }

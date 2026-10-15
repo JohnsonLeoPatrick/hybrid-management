@@ -41,6 +41,16 @@ Saved login sessions may be remembered by Supabase in the same browser. Use **Si
 
 ## Data and permissions
 
+### QR self-registration and arrival capture
+
+For an existing Supabase database, run `supabase/003_qr_registration.sql` once in SQL Editor. Staff can then open **QR sign-up**, download a branch-specific QR and review submissions. The DD form is `https://hybrid-management.vercel.app/join/dd`; the QR screen can generate codes for another deployment origin or branch. The repository also includes `public/hybrid-dd-signup-qr.png` for printing.
+
+New members can enter their details, choose a plan and consent without a staff account. Submission records an arrival timestamp and a **pending** registration. It does not activate a paid membership, collect online payment, verify physical presence or mark class attendance. Staff review the request and press **Create member**, confirming plan, start date and any amount collected. Approval atomically creates the member, membership, enrollments and payment, and links the original arrival. Staff can decline or inspect duplicate requests. Existing members continue to check in with reception.
+
+Public RPCs return only branch names and advertised plans, and accept tightly validated registrations. Request details are protected by RLS; anonymous users cannot read them, approve requests or access member/payment records. Pending submissions are deduplicated by phone and branch. Consent and arrival timestamps are retained, along with reviewer identity. Submission limits are 3 requests per phone/branch per 24 hours and 100 per branch/hour. The staff queue refreshes every 30 seconds and shows the latest 250 submissions. These controls reduce repeated submissions; they do not verify phone ownership or replace a CAPTCHA for a high-traffic public rollout.
+
+Old installations can continue normal staff work before this migration, but the public form and QR queue will remain unavailable until it is applied. Do not re-run the initial schema on an existing database.
+
 Separate tables hold branches, staff, profiles, members, plans, memberships, renewals, classes, member/class links, plan/class links, payments, attendance and notes. The UI's general and medical notes are member fields; the separate notes table is available for future authored note timelines. Class arrays are synchronized to normalized junction tables by triggers. Records use foreign keys and unique constraints. Dates are evaluated against Asia/Kuala_Lumpur. Active dashboard totals include memberships expiring soon.
 
 `apply_changes` is a transaction using **SECURITY INVOKER**, so the caller's table RLS applies. Staff can read operational records, register/edit members, enroll classes, record attendance/payments and append renewals. Admins additionally manage plans/classes, view reports and change membership states. Super admins manage branch and staff configuration. Navigation is convenience; database policies enforce access independently. Database membership/payment triggers prevent changes to historical fields. Class removal archives the class, preserving past attendance.
