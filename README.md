@@ -11,7 +11,7 @@ npm install
 npm run dev
 ```
 
-Open http://localhost:3000. Without Supabase variables, an explicitly labelled demo workspace provides sample records and browser-local persistence. Do not enter real personal data in demo mode. Reset sample records from Settings. Demo access does not simulate production security.
+Open http://localhost:3000. This is a live-only application: configure Supabase before use and sign in with an authorized staff account. If connection settings are missing, the app shows a setup-required screen. Member records are never saved to browser demo storage. Old demo data is neither loaded nor deleted; migrate any records you want to keep separately.
 
 On Windows PowerShell where script execution is disabled, use `npm.cmd` instead of `npm` (for example, `npm.cmd run dev`).
 
@@ -37,6 +37,8 @@ Run `node scripts/check-supabase.mjs` to check the configured project's authenti
 - CSV/XLSX export of filtered member records, and reports by date/month, branch and plan.
 - Staff role administration and Supabase RLS. All authorized staff can access academy-wide operational member records; branch selection is a working filter, not an isolation boundary.
 
+Saved login sessions may be remembered by Supabase in the same browser. Use **Sign out** at the bottom of the sidebar on a shared device. Authentication is still required, and revoked/invalid sessions never fall back to sample records.
+
 ## Data and permissions
 
 Separate tables hold branches, staff, profiles, members, plans, memberships, renewals, classes, member/class links, plan/class links, payments, attendance and notes. The UI's general and medical notes are member fields; the separate notes table is available for future authored note timelines. Class arrays are synchronized to normalized junction tables by triggers. Records use foreign keys and unique constraints. Dates are evaluated against Asia/Kuala_Lumpur. Active dashboard totals include memberships expiring soon.
@@ -61,4 +63,4 @@ Import this repository into Vercel, select Next.js and set both public Supabase 
 
 ## Structure
 
-`app/` handles the app shell/styles; `components/` contains dashboard, forms, management pages and import/export; `types/` defines records; `lib/` supplies dates, status, seed data and Supabase client; `services/` handles database transactions; `supabase/` contains schema/policies; `tests/` contains domain tests.
+`app/` handles the app shell/styles; `components/` contains dashboard, forms, management pages and import/export; `types/` defines records; `lib/` supplies dates, status, test fixtures and the Supabase client; `hooks/` verifies staff sessions and clears workspace records on sign-out; `services/` handles database transactions; `supabase/` contains schema/policies; `tests/` contains domain tests.
