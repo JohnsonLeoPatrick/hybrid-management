@@ -4,7 +4,6 @@ export function validateRegistration(details: RegistrationDetails) {
  if (details.name.trim().length < 2 || details.name.length > 120) return 'Enter your full name (2–120 characters).';
  if (!/^\d{7,20}$/.test(details.phone.replace(/\D/g, ''))) return 'Enter a valid phone number.';
  if (details.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(details.email)) return 'Enter a valid email address.';
- if (!details.planId) return 'Choose a membership plan.';
  if (!details.consent) return 'Please agree to let the academy use these details for your registration.';
  return '';
 }

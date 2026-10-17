@@ -1,3 +1,4 @@
+import type { MembershipSelection } from '@/lib/memberships';
 import { supabase } from '@/lib/supabase';
 import type { RegistrationDetails, RegistrationOptions, RegistrationRequest } from '@/types/onboarding';
 
@@ -24,8 +25,8 @@ export async function registrationRequests(branchId?: string) {
  if (error) throw new Error(errorMessage(error));
  return data as RegistrationRequest[];
 }
-export async function approveRegistration(id: string, plan: string, start: string, amount: number, method: string, status: string) {
- const { data, error } = await client().rpc('approve_registration', { request_id: id, selected_plan: plan, start_date: start, amount_paid: amount, payment_method: method, payment_status: status });
+export async function approveRegistration(id: string, selections: MembershipSelection[], method: string, status: string) {
+ const { data, error } = await client().rpc('approve_registration_memberships', { request_id: id, selected_memberships: selections, payment_method: method, payment_status: status });
  if (error) throw new Error(errorMessage(error));
  return data as string;
 }

@@ -13,6 +13,20 @@ export function membershipTiming(m?: Membership, now = today()) {
  const days = Math.abs(remaining), unit = days===1?'day':'days';
  return remaining < 0 ? `Expired ${days} ${unit} ago` : `${days} ${unit} left`;
 }
-export function current(db: Database, memberId: string) { return db.memberships.filter(m=>m.memberId===memberId).sort((a,b)=>b.created.localeCompare(a.created))[0]; }
+// Each plan has its own membership timeline. Buying another class never replaces it.
+export function currentMemberships(db: Database, memberId: string) {
+ const latest = new Map<string, Membership>();
+ for (const m of db.memberships.filter(m=>m.memberId===memberId).sort((a,b)=>a.created.localeCompare(b.created))) latest.set(m.planId,m);
+ return [...latest.values()];
+}
+export function current(db: Database, memberId: string, planId?: string) {
+ const memberships=currentMemberships(db,memberId);
+ if(planId)return memberships.find(m=>m.planId===planId)!;
+ return memberships.sort((a,b)=>a.expiry.localeCompare(b.expiry))[0];
+}
+export function memberStatus(db: Database, memberId: string) {
+ const states=currentMemberships(db,memberId).map(m=>status(m));
+ return ['EXPIRING SOON','ACTIVE','UPCOMING','FROZEN','EXPIRED','CANCELLED'].find(s=>states.includes(s as ReturnType<typeof status>))||'EXPIRED';
+}
 export const money = (n: number) => new Intl.NumberFormat('en-MY',{style:'currency',currency:'MYR',maximumFractionDigits:0}).format(n);
 export function memberNumber(db: Database, branchId: string) { const code = db.branches.find(b=>b.id===branchId)?.code || 'DD'; const max = Math.max(0,...db.members.filter(m=>m.id.startsWith(`HYB-${code}-`)).map(m=>Number(m.id.split('-').pop())||0)); return `HYB-${code}-${String(max+1).padStart(5,'0')}`; }

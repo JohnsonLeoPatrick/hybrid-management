@@ -10,8 +10,8 @@ try {
   if (data.code === 'PGRST202' || data.code === '42883') throw new Error('QR database update is not applied yet. Run supabase/003_qr_registration.sql once.');
   throw new Error(`QR options returned HTTP ${response.status}, code ${data.code || 'unknown'}.`);
  }
- if (!data?.branch || !Array.isArray(data.plans)) throw new Error('The DD branch is unavailable.');
- console.log(`PASS: public registration options available for ${data.branch.name}; ${data.plans.length} active plans.`);
+ if (!data?.branch) throw new Error('The DD branch is unavailable.');
+ console.log(`PASS: public registration options available for ${data.branch.name}; personal-details signup.`);
  const privateResponse = await fetch(new URL('/rest/v1/registration_requests?select=id&limit=1',url), {headers:{apikey:key},signal:AbortSignal.timeout(15000)});
  if (privateResponse.ok) {
   const records=await privateResponse.json();
