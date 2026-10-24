@@ -11,6 +11,8 @@ export function useWorkspace() {
   const [role, setRole] = useState<Role>('STAFF');
   const [ready, setReady] = useState(false);
   const [error, setError] = useState('');
+  const [paymentUnlocked, setPaymentUnlocked] = useState(false);
+  const [staffUnlocked, setStaffUnlocked] = useState(false);
   const active = useRef(false);
   const sequence = useRef(0);
 
@@ -18,6 +20,8 @@ export function useWorkspace() {
     setUser(null);
     setRole('STAFF');
     setDb(emptyDatabase());
+    setPaymentUnlocked(false);
+    setStaffUnlocked(false);
   }, []);
 
   const refresh = useCallback(async (showLoading = true) => {
@@ -28,7 +32,13 @@ export function useWorkspace() {
       const workspace = await loadWorkspace(supabase);
       if (!active.current || request !== sequence.current) return;
       if (workspace) {
-        setDb(workspace.db);
+        const [access,staffAccess] = await Promise.all([supabase!.rpc('payment_access'),supabase!.rpc('staff_access')]);
+        if (!active.current || request !== sequence.current) return;
+        const unlocked = !access.error && access.data === true;
+        const staffAllowed = !staffAccess.error && staffAccess.data === true;
+        setPaymentUnlocked(unlocked);
+        setStaffUnlocked(staffAllowed);
+        setDb({...workspace.db,payments:unlocked?workspace.db.payments:[],staff:staffAllowed?workspace.db.staff:workspace.db.staff.filter(person=>person.id===workspace.userId)});
         setUser(workspace.userId);
         setRole(workspace.role);
       } else clear();
@@ -55,9 +65,32 @@ export function useWorkspace() {
         setTimeout(() => { if (active.current) void refresh(event === 'SIGNED_IN'); }, 0);
       }
     });
+    // A restored back/forward-cache document must not resurrect an old in-memory login.
+    const onRestore = (event: PageTransitionEvent) => { if (event.persisted) window.location.reload(); };
+    window.addEventListener('pageshow', onRestore);
     void refresh();
-    return () => { active.current = false; ++sequence.current; data.subscription.unsubscribe(); };
+    return () => { active.current = false; ++sequence.current; data.subscription.unsubscribe(); window.removeEventListener('pageshow', onRestore); };
   }, [clear, refresh]);
 
-  return { db, setDb, user, role, ready, error, refresh };
+  useEffect(() => {
+    if (!user || !supabase) return;
+    let cancelled = false;
+    const check = async () => {
+      const [access,staffAccess] = await Promise.all([supabase!.rpc('payment_access'),supabase!.rpc('staff_access')]);
+      if (cancelled) return;
+      if (access.error || access.data !== true) {
+        setPaymentUnlocked(false);
+        setDb(current => current.payments.length ? {...current, payments: []} : current);
+      }
+      if (staffAccess.error || staffAccess.data !== true) {
+        setStaffUnlocked(false);
+        setDb(current => current.staff.some(person=>person.id!==user) ? {...current,staff:current.staff.filter(person=>person.id===user)} : current);
+      }
+    };
+    const timer = setInterval(() => void check(), 10000);
+    window.addEventListener('focus', check);
+    return () => { cancelled = true; clearInterval(timer); window.removeEventListener('focus', check); };
+  }, [user]);
+
+  return { db, setDb, user, role, ready, error, refresh, paymentUnlocked, staffUnlocked };
 }

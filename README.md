@@ -13,6 +13,16 @@ npm run dev
 
 Open http://localhost:3000. This is a live-only application: configure Supabase before use and sign in with an authorized staff account. If connection settings are missing, the app shows a setup-required screen. Member records are never saved to browser demo storage. Old demo data is neither loaded nor deleted; migrate any records you want to keep separately.
 
+Each new tab, full page reload, or reopened browser requires a fresh staff login. Tokens stay in document memory, not browser storage. Navigation within the workspace keeps the current login. Existing tokens from older versions are ignored; Supabase still controls token validity and revocation on the backend.
+
+### Payment security update
+
+Apply `supabase/006_payment_security.sql` once in the project's Supabase SQL Editor after migration 005, including installations created with `START_HERE.sql`. Then apply `supabase/migrations/20261024091149_payment_section_scope.sql`. The final policies require an authorized payment unlock to read payment history or update settlement status, including direct API calls. Authorized staff can record new payments during normal front-desk work without unlocking the ledger. Ordinary member browsing remains available without that unlock. Applying this update immediately locks payments for all accounts, including super admins, until passwords are configured.
+
+Sign in as a super admin, open **Staff**, expand **Payment permission** for each approved account, and set a separate payment password. Use at least 7 characters and at most 72 UTF-8 bytes. Prefer a longer password after temporary setup. Share the password securely with that staff member. Staff enter their own payment password on **Payments** or **Reports**. Both sections share the same 15-minute unlock. Payment records are also withheld from dashboards, reports, and member profiles until unlocked. QR sign-up review, approvals, member registration, renewals, and payment collection do not prompt for the payment password. Reports require the same payment password. The public registration form remains open.
+
+Passwords are stored as bcrypt hashes in a private schema. Unlocks are tied to the staff member's live Supabase Auth session and expire after 15 minutes. Five failed attempts lock the account's payment password for 15 minutes. **Lock payments** ends the current unlock; resetting or revoking a staff member's payment access cancels all their unlocks. The app checks revocation every 10 seconds and on window focus, while the database enforces expiry and revocation on every payment request. Information already viewed or downloaded cannot be recalled.
+
 On Windows PowerShell where script execution is disabled, use `npm.cmd` instead of `npm` (for example, `npm.cmd run dev`).
 
 ## Supabase setup
@@ -76,3 +86,13 @@ Hosting environment variables override the committed public defaults. If the hos
 ## Structure
 
 `app/` handles the app shell/styles; `components/` contains dashboard, forms, management pages and import/export; `types/` defines records; `lib/` supplies dates, status, test fixtures and the Supabase client; `hooks/` verifies staff sessions and clears workspace records on sign-out; `services/` handles database transactions; `supabase/` contains schema/policies; `tests/` contains domain tests.
+
+### Download payment records
+
+Unlock **Payments**, choose a branch if needed, then select **Download Excel** or **Download PDF**. These replace the previous payment import option. Downloads contain the ledger records shown for the selected branch, sorted newest first, plus the recorded total and generation date. The Excel workbook keeps amounts numeric with two decimal places and includes payment and membership IDs. The PDF uses a landscape layout with repeated headers and continuation rows for long notes. Both exports include member, membership, amount, date, method, reference, status, and notes. Export checks the backend payment unlock before creating a file and never changes payment records.
+
+### Staff administration security
+
+Apply `supabase/migrations/20261024094934_staff_security.sql` after the other security migrations. Also apply `supabase/migrations/20261024103544_separate_staff_password.sql`. Opening **Staff** requires a super admin to enter their separately configured Staff password, stored as a bcrypt hash in the private staff credentials table. The workspace login password is not used for this check. This unlock is separate from Payments and Reports, expires after 15 minutes, and is tied to the current live Auth session. Five incorrect confirmations cause a separate 15-minute lockout. Changing either the account login password or the Staff credential invalidates existing Staff unlocks. Staff credentials must be configured explicitly through trusted database administration; granting a user the SUPER ADMIN role alone does not configure a Staff password.
+
+Database policies protect staff inserts, updates, and deletes, including direct API calls. Locked users can read only their own staff record, so normal workspace login still works. Changing payment passwords or granting payment permission also requires an active Staff unlock. Staff cannot change their own role or remove their own access, even while unlocked. **Lock Staff** ends the Staff unlock without locking Payments or Reports. Existing login and payment passwords are unchanged by this migration.
