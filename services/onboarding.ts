@@ -1,4 +1,5 @@
 import type { MembershipSelection } from '@/lib/memberships';
+import { toCents } from '@/lib/money';
 import { supabase } from '@/lib/supabase';
 import type { RegistrationDetails, RegistrationOptions, RegistrationRequest } from '@/types/onboarding';
 
@@ -26,6 +27,7 @@ export async function registrationRequests(branchId?: string) {
  return data as RegistrationRequest[];
 }
 export async function approveRegistration(id: string, selections: MembershipSelection[], method: string, status: string) {
+ selections.forEach(selection=>toCents(selection.amount));
  const { data, error } = await client().rpc('approve_registration_memberships', { request_id: id, selected_memberships: selections, payment_method: method, payment_status: status });
  if (error) throw new Error(errorMessage(error));
  return data as string;

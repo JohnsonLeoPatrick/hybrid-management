@@ -1,5 +1,6 @@
 import type { Database, Membership } from '@/types';
 import { addMonths, current, today, uid } from './utils';
+import { toCents } from './money';
 
 export interface MembershipSelection { planId: string; start: string; months: number; amount: number }
 
@@ -8,7 +9,7 @@ export function addMembershipSelections(db: Database, memberId: string, selectio
  if(new Set(selections.map(s=>s.planId)).size!==selections.length)throw Error('Choose each membership only once');
  let next=db;
  for(const choice of selections){
-  if(!Number.isFinite(choice.amount)||choice.amount<0)throw Error('Enter a valid payment amount');
+  toCents(choice.amount);
   const result=addPlanMembership(next,memberId,choice.planId,choice.start,choice.months);
   next=result.db;
   if(choice.amount>0)next={...next,payments:[...next.payments,{id:uid(),memberId,membershipId:result.membership.id,amount:choice.amount,date:today(),method,reference,notes:'Class membership',status:paymentStatus}]};

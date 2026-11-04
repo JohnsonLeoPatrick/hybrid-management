@@ -28,5 +28,5 @@ export function memberStatus(db: Database, memberId: string) {
  const states=currentMemberships(db,memberId).map(m=>status(m));
  return ['EXPIRING SOON','ACTIVE','UPCOMING','FROZEN','EXPIRED','CANCELLED'].find(s=>states.includes(s as ReturnType<typeof status>))||'EXPIRED';
 }
-export const money = (n: number) => new Intl.NumberFormat('en-MY',{style:'currency',currency:'MYR',maximumFractionDigits:0}).format(n);
+export const money = (n: number) => new Intl.NumberFormat('en-MY',{style:'currency',currency:'MYR',minimumFractionDigits:2,maximumFractionDigits:2}).format(n);
 export function memberNumber(db: Database, branchId: string) { const code = db.branches.find(b=>b.id===branchId)?.code || 'DD'; const max = Math.max(0,...db.members.filter(m=>m.id.startsWith(`HYB-${code}-`)).map(m=>Number(m.id.split('-').pop())||0)); return `HYB-${code}-${String(max+1).padStart(5,'0')}`; }

@@ -15,6 +15,12 @@ Open http://localhost:3000. This is a live-only application: configure Supabase 
 
 Each new tab, full page reload, or reopened browser requires a fresh staff login. Tokens stay in document memory, not browser storage. Navigation within the workspace keeps the current login. Existing tokens from older versions are ignored; Supabase still controls token validity and revocation on the backend.
 
+### Money precision and reports
+
+Apply `supabase/migrations/20261104032953_money_precision.sql` after the existing registration and payment migrations. This validates monetary inputs before database conversion can round extra decimal places. Existing payment amounts and access policies are preserved.
+
+All prices, payment amounts, and report totals display two decimal places. Collections are summed as integer sen. **Reports → Collected payments** includes `Paid` and `Partial` records and excludes `Pending` and `Overdue`. For a partial payment, enter only the amount actually received. Record later collections as new payments; changing a payment's status does not add another amount. The selected plan is matched through each payment's own membership, so two plans bought by one member remain separate. Payment dates determine the reporting period. Workspace reads paginate through all records and fail explicitly when a complete result cannot be verified.
+
 ### Member check-in
 
 Apply `supabase/migrations/20261104025440_member_check_in.sql` once after the existing setup migrations. This update is also required for installations created with `START_HERE.sql`. It allows general gym attendance without a class and prevents duplicate gym visits per member per day. Existing class attendance, enrollment validation, and access policies remain in place.

@@ -1,5 +1,6 @@
 import * as XLSX from 'xlsx';
 import type {Database,Payment} from '@/types';
+import { sumMoney } from './money';
 
 export function buildPaymentExport(db:Database,payments:Payment[],branch:string,generated:string){
  const rows=payments.slice().sort((a,b)=>b.date.localeCompare(a.date)).map(p=>{
@@ -8,7 +9,7 @@ export function buildPaymentExport(db:Database,payments:Payment[],branch:string,
   if(!Number.isFinite(p.amount)||p.amount<0)throw new Error('A payment has an invalid amount. Check the ledger before exporting.');
   return {'Member':member?.name||'Archived member','Member ID':p.memberId,'Membership':db.plans.find(plan=>plan.id===membership?.planId)?.name||'Archived plan','Amount (RM)':p.amount,'Payment date':p.date,'Method':p.method,'Reference':p.reference,'Status':p.status,'Notes':p.notes,'Payment ID':p.id,'Membership ID':p.membershipId};
  });
- return {branch,generated,rows,total:rows.reduce((sum,row)=>sum+Math.round(row['Amount (RM)']*100),0)/100};
+ return {branch,generated,rows,total:sumMoney(rows.map(row=>row['Amount (RM)']))};
 }
 export type PaymentExport=ReturnType<typeof buildPaymentExport>;
 export function createPaymentWorkbook(data:PaymentExport){
