@@ -7,6 +7,7 @@ import { currentMemberships, memberStatus, daysLeft, status, today } from '@/lib
 import { Badge } from './gym-app';
 import { MembershipChart } from './membership-chart';
 import { MemberCheckIn } from './member-check-in';
+import { AttendanceHistory } from './attendance-history';
 
 const cardMotion = {
  whileHover: { y: -3 },
@@ -19,6 +20,7 @@ export function ReceptionDashboard({db,members,open,navigate,canReport,paymentUn
  const unpaid=db.payments.filter(p=>p.status!=='Paid'&&members.some(m=>m.id===p.memberId));
  return <MotionConfig reducedMotion="user"><div className="dashboard-layout">
   <MemberCheckIn key={branch} {...{db,members,save,busy,open}}/>
+  <AttendanceHistory key={'history-'+branch} branch={branch} members={members} revision={db.attendance.length}/>
   <div className="dashboard-section-label"><span>YOUR ACADEMY AT A GLANCE</span><span>Live overview</span></div>
   <div className="simple-stats">{[
    {label:'Total members',value:members.length,Icon:Users,page:'Members',detail:'Your academy community'},

@@ -21,6 +21,8 @@ Apply `supabase/migrations/20261104025440_member_check_in.sql` once after the ex
 
 On **Overview**, use **Member check-in** to search by member ID, name, or phone number. Select the member, choose **Gym visit** or **Class attendance**, then confirm. Classes must be enrolled at the member's branch. Membership warnings are shown for reception to review; they do not automatically reject attendance. Today's arrivals follow the branch filter and Malaysia's calendar date. Gym visits also appear in the member's attendance history.
 
+Below the check-in panel, open **Check-in history → View history** to browse past attendance. Filter by date range, member, visit type, and the workspace branch selector. Leave dates empty for all-time history. Results load directly from Supabase in pages of 25, including records older than the dashboard's loaded data. Check-ins are stored in `public.attendance` and remain available after sign-out or reload. Access requires an authorized staff session. No separate history migration is needed.
+
 ### Payment security update
 
 Apply `supabase/006_payment_security.sql` once in the project's Supabase SQL Editor after migration 005, including installations created with `START_HERE.sql`. Then apply `supabase/migrations/20261024091149_payment_section_scope.sql`. The final policies require an authorized payment unlock to read payment history or update settlement status, including direct API calls. Authorized staff can record new payments during normal front-desk work without unlocking the ledger. Ordinary member browsing remains available without that unlock. Applying this update immediately locks payments for all accounts, including super admins, until passwords are configured.
