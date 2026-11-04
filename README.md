@@ -15,6 +15,12 @@ Open http://localhost:3000. This is a live-only application: configure Supabase 
 
 Each new tab, full page reload, or reopened browser requires a fresh staff login. Tokens stay in document memory, not browser storage. Navigation within the workspace keeps the current login. Existing tokens from older versions are ignored; Supabase still controls token validity and revocation on the backend.
 
+### Member check-in
+
+Apply `supabase/migrations/20261104025440_member_check_in.sql` once after the existing setup migrations. This update is also required for installations created with `START_HERE.sql`. It allows general gym attendance without a class and prevents duplicate gym visits per member per day. Existing class attendance, enrollment validation, and access policies remain in place.
+
+On **Overview**, use **Member check-in** to search by member ID, name, or phone number. Select the member, choose **Gym visit** or **Class attendance**, then confirm. Classes must be enrolled at the member's branch. Membership warnings are shown for reception to review; they do not automatically reject attendance. Today's arrivals follow the branch filter and Malaysia's calendar date. Gym visits also appear in the member's attendance history.
+
 ### Payment security update
 
 Apply `supabase/006_payment_security.sql` once in the project's Supabase SQL Editor after migration 005, including installations created with `START_HERE.sql`. Then apply `supabase/migrations/20261024091149_payment_section_scope.sql`. The final policies require an authorized payment unlock to read payment history or update settlement status, including direct API calls. Authorized staff can record new payments during normal front-desk work without unlocking the ledger. Ordinary member browsing remains available without that unlock. Applying this update immediately locks payments for all accounts, including super admins, until passwords are configured.

@@ -6,6 +6,7 @@ import { Database, Member } from '@/types';
 import { currentMemberships, memberStatus, daysLeft, status, today } from '@/lib/utils';
 import { Badge } from './gym-app';
 import { MembershipChart } from './membership-chart';
+import { MemberCheckIn } from './member-check-in';
 
 const cardMotion = {
  whileHover: { y: -3 },
@@ -13,10 +14,11 @@ const cardMotion = {
  transition: { type: 'spring' as const, stiffness: 380, damping: 30 },
 };
 
-export function ReceptionDashboard({db,members,open,navigate,canReport,paymentUnlocked}:{db:Database;members:Member[];open:(kind:string,m?:Member|null)=>void;navigate:(p:string)=>void;canReport:boolean;paymentUnlocked:boolean}){
+export function ReceptionDashboard({db,members,open,navigate,canReport,paymentUnlocked,save,busy,branch}:{db:Database;members:Member[];open:(kind:string,m?:Member|null)=>void;navigate:(p:string)=>void;canReport:boolean;paymentUnlocked:boolean;save:(db:Database)=>Promise<boolean>;busy:boolean;branch:string}){
  const expiring=members.flatMap(m=>currentMemberships(db,m.id).map(ms=>({m,ms}))).filter(({ms})=>status(ms)==='EXPIRING SOON').sort((a,b)=>a.ms.expiry.localeCompare(b.ms.expiry));
  const unpaid=db.payments.filter(p=>p.status!=='Paid'&&members.some(m=>m.id===p.memberId));
  return <MotionConfig reducedMotion="user"><div className="dashboard-layout">
+  <MemberCheckIn key={branch} {...{db,members,save,busy,open}}/>
   <div className="dashboard-section-label"><span>YOUR ACADEMY AT A GLANCE</span><span>Live overview</span></div>
   <div className="simple-stats">{[
    {label:'Total members',value:members.length,Icon:Users,page:'Members',detail:'Your academy community'},

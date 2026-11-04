@@ -6,6 +6,6 @@ export interface Member { id: string; name: string; ic: string; dob: string; gen
 export interface Membership { id: string; memberId: string; planId: string; start: string; expiry: string; state: 'NORMAL' | 'FROZEN' | 'CANCELLED'; created: string }
 export interface Payment { id: string; memberId: string; membershipId: string; amount: number; date: string; method: string; reference: string; notes: string; status: string }
 export interface Renewal { id: string; memberId: string; previousId: string; membershipId: string; date: string }
-export interface Attendance { id: string; memberId: string; classId: string; date: string }
+export interface Attendance { id: string; memberId: string; classId: string | null; date: string }
 export interface Staff { id: string; name: string; email: string; role: Role; branchId: string }
 export interface Database { branches: Branch[]; plans: Plan[]; classes: GymClass[]; members: Member[]; memberships: Membership[]; payments: Payment[]; renewals: Renewal[]; attendance: Attendance[]; staff: Staff[] }
