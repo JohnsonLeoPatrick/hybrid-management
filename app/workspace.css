@@ -72,6 +72,9 @@
 .app .text-button { color: var(--gold); min-height: 44px; font-size: 14px; }
 .app .icon-button, .app .mobile-toggle { min-width: 44px; min-height: 44px; color: #d0d1d4; }
 .app :is(button, a, input, select, summary):focus-visible { outline: 3px solid var(--gold); outline-offset: 4px; }
+/* The search wrapper provides one focus border around the icon and input. */
+.app .check-in-panel .check-in-search:focus-within { outline: none; border-color: var(--muted) !important; box-shadow: none; }
+.app .check-in-panel .check-in-search input:is(:focus, :focus-visible) { outline: none; box-shadow: none; border: 0; }
 .dashboard-section-label { display: flex; justify-content: space-between; gap: 16px; margin-bottom: 14px; color: #a5a8ad; font-size: 13px; }
 .dashboard-section-label > span:first-child { font-size: 12px; font-weight: 600; letter-spacing: 1.6px; }
 .app .simple-stats { gap: 16px; margin-bottom: 30px; }
