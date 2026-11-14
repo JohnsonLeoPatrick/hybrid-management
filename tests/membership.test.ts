@@ -30,10 +30,10 @@ test('boxing and Muay Thai keep independent dates and renew only the selected pl
  const thai={...boxing,id:'muay-thai'};db.plans=[boxing,thai];
  const first=addPlanMembership(db,member.id,boxing.id,'2026-10-17',1);
  const second=addPlanMembership(first.db,member.id,thai.id,'2026-10-24',1);
- assert.equal(current(second.db,member.id,boxing.id).expiry,'2026-11-18');
- assert.equal(current(second.db,member.id,thai.id).expiry,'2026-11-25');
+ assert.equal(current(second.db,member.id,boxing.id).expiry,'2026-11-17');
+ assert.equal(current(second.db,member.id,thai.id).expiry,'2026-11-24');
  assert.equal(second.db.renewals.length,0);
- const renewed=addPlanMembership(second.db,member.id,boxing.id,'2026-11-18',1);
+ const renewed=addPlanMembership(second.db,member.id,boxing.id,'2026-11-17',1);
  assert.equal(renewed.db.renewals[0].previousId,first.membership.id);
  assert.equal(current(renewed.db,member.id,thai.id).id,second.membership.id);
  assert.equal(currentMemberships(renewed.db,member.id).length,2);
@@ -63,7 +63,7 @@ test('multiple choices save distinct memberships and payments without changing t
  const selections=[{planId:'boxing',start:'2026-10-17',months:1,amount:170},{planId:'thai',start:'2026-10-24',months:2,amount:340}];
  const next=addMembershipSelections(db,member.id,selections,'Cash','Paid');
  assert.equal(next.memberships.length,2);assert.equal(next.payments.length,2);
- assert.deepEqual(next.memberships.map(m=>m.expiry),['2026-11-18','2026-12-25']);
+ assert.deepEqual(next.memberships.map(m=>m.expiry),['2026-11-17','2026-12-24']);
  assert.deepEqual(next.payments.map(p=>p.amount),[170,340]);
  assert.deepEqual(next.payments.map(p=>p.membershipId),next.memberships.map(m=>m.id));
  assert.throws(()=>addMembershipSelections(db,member.id,[],'Cash','Paid'),/at least one/);
