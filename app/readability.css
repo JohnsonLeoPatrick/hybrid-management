@@ -1,0 +1,72 @@
+/* The workspace uses a black-and-yellow palette and a readable type scale. */
+.app, .login, .public-registration {
+  --gold: #f0c92c; --ink: #f2f2f2; --muted: #b8b8b8; --line: #363636;
+  --bg: #090909; --surface: #171717; --surface-raised: #242424;
+  --accent-soft: #292510; --accent-ink: #111111;
+  font-size: 18px;
+}
+.app .content { padding-bottom: 28px; }
+.app .sidebar .brand { padding-bottom: 24px; }
+.app .sidebar .brand small { letter-spacing: 0; text-transform: none; font-size: 16px; }
+.app .sidebar .nav-item { font-size: 17px; min-height: 48px; }
+.app .sidebar .nav-group-label { font-size: 16px; padding-top: 20px; }
+.app .sidebar .user b, .app .sidebar .user small { font-size: 16px; }
+.app .sidebar .user { margin-top: 8px; padding-top: 12px; }
+.app .sidebar .branch-select { font-size: 16px; }
+.app .page-heading p, .app td, .app .field, .app .text-button, .app .secondary, .app .primary { font-size: 17px; }
+.app .overview-page :is(.primary,.secondary,select) { font-size: 17px; }
+.app .overview-page .primary { background: #f0c92c; border-color: #f0c92c; color: #111111; }
+.app .overview-page .primary:hover { background: #ffdb42; border-color: #ffdb42; }
+.app .overview-page .text-button { font-size: 16px; color: #f0c92c; }
+.app .overview-page .check-in-heading h2 { font-size: 24px; }
+.app .overview-page .check-in-today h3 { font-size: 18px; }
+.app .overview-page .check-in-search input { font-size: 18px; }
+.app .overview-page .simple-stats { grid-template-columns: repeat(4,minmax(0,1fr)); }
+.app .overview-page .stat-top { font-size: 16px; align-items: flex-start; }
+.app .overview-page .simple-stats strong { font-size: 38px; }
+.app .overview-page .metric-3 strong { font-size: 30px; }
+.app .overview-page .reception-actions b { font-size: 17px; }
+.app .overview-page .reception-actions > button { min-height: 72px; }
+.app .overview-page .panel-heading h2 { font-size: 18px; }
+.app .overview-page .dashboard-insights { grid-template-columns: minmax(0,1fr); }
+.app .overview-page .status-chart { grid-template-columns: 220px minmax(0,1fr); gap: 24px; padding: 24px; }
+.app .overview-page .status-donut { width: 200px; }
+.app .overview-page .status-legend-heading, .app .overview-page .status-legend button { grid-template-columns: minmax(0,1fr) 84px 72px; font-size: 16px; gap: 16px; }
+.app .overview-page .status-legend button b, .app .overview-page .status-legend-share { font-size: 16px; }
+.app .overview-page .status-donut-center span, .app .overview-page .status-chart-summary, .app .overview-page .status-show-all { font-size: 16px; }
+.app .overview-page .attention-row .member-cell b, .app .overview-page .activity-row b { font-size: 17px; }
+.app .overview-page .attention-row .primary { font-size: 16px; min-width: 84px; }
+.app .overview-page .member-cell small, .app .overview-page .activity-row small, .app .overview-page .expiry-note, .app .overview-page .expiry-note small { font-size: 16px; }
+.app .overview-page .expiry-note { min-width: 120px; }
+.app .overview-page .badge { font-size: 16px; }
+.app .overview-page .check-in-arrival b { font-size: 17px; }
+.app .overview-page .check-in-arrival small, .app .overview-page .check-in-footnote, .app .overview-page .check-in-date { font-size: 16px; }
+.app .overview-page .check-in-arrival { min-height: 72px; }
+.app .overview-page .avatar { width: 40px; height: 40px; font-size: 16px; }
+.app .overview-page .attendance-history h2, .app .overview-page .attendance-history .secondary { font-size: 16px; }
+.app .check-in-types input { flex-shrink: 0; }
+@media (min-width: 1500px) {
+  .app .overview-page .dashboard-insights { grid-template-columns: minmax(0,1.2fr) minmax(0,1fr); }
+  .app .overview-page .status-chart { grid-template-columns: 180px minmax(0,1fr); gap: 12px; padding: 20px; }
+  .app .overview-page .status-donut { width: 172px; }
+  .app .overview-page .status-legend-heading, .app .overview-page .status-legend button { grid-template-columns: minmax(0,1fr) 72px 56px; gap: 8px; }
+}
+@media (max-width: 1100px) {
+  .app .overview-page .simple-stats { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .app .overview-page .simple-stats .stat-card:nth-child(odd) { border-left: 0; }
+  .app .overview-page .simple-stats .stat-card:nth-child(n+3) { border-top: 1px solid var(--line); }
+  .app .overview-page .check-in-panel { grid-template-columns: minmax(0,1.2fr) minmax(0,1fr); }
+}
+@media (max-width: 760px) {
+  .app .overview-page .check-in-panel, .app .overview-page .status-chart { grid-template-columns: minmax(0,1fr); }
+  .app .overview-page .check-in-main, .app .overview-page .check-in-today { padding: 20px; }
+  .app .overview-page .simple-stats .stat-card { padding: 20px 12px; }
+  .app .overview-page .status-chart { gap: 12px; padding: 16px; }
+  .app .overview-page .status-legend-heading, .app .overview-page .status-legend button { grid-template-columns: minmax(0,1fr) 72px 56px; gap: 8px; padding-inline: 4px; }
+  .app .overview-page .status-legend-name { gap: 6px; }
+  .app .overview-page .attention-row .member-cell { flex-basis: 100%; }
+  .app .overview-page .attention-row .primary { margin-left: 0; }
+  .app .overview-page .attention-row .expiry-note { flex: 1; }
+  .app .overview-page .activity-row { min-height: 88px; }
+  .app .overview-page .latest-status { flex-basis: 100%; margin-left: 52px; }
+}

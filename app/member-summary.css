@@ -1,0 +1,42 @@
+/* Academy summary: one yellow anchor, strong figures, and real membership context. */
+.app .overview-page .simple-stats.summary-grid {
+  display: grid; grid-template-columns: repeat(4,minmax(0,1fr));
+  gap: 16px; background: transparent; border: 0; border-radius: 0; overflow: visible;
+}
+.app .overview-page .simple-stats.summary-grid .stat-card {
+  position: relative; display: flex; flex-direction: column; align-items: stretch;
+  padding: 24px; min-height: 208px; text-align: left;
+  border: 1px solid #343434; border-radius: 14px; background: #171717;
+  box-shadow: 0 4px 12px #0002; overflow: hidden;
+}
+.app .overview-page .simple-stats.summary-grid .summary-card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; color: #939393; }
+.app .overview-page .simple-stats.summary-grid .summary-icon { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 10px; background: #262626; color: #e1e1e1; }
+.app .overview-page .simple-stats.summary-grid .stat-top { display: block; color: #c1c1c1; font-size: 17px; line-height: 1.4; }
+.app .overview-page .simple-stats.summary-grid .summary-value { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-top: 8px; }
+.app .overview-page .simple-stats.summary-grid strong { margin: 0; font-size: 46px; font-weight: 500; letter-spacing: -1.5px; line-height: 1.15; color: #f4f4f4; }
+.app .overview-page .simple-stats.summary-grid .summary-share { color: #f0c92c; font-size: 17px; font-variant-numeric: tabular-nums; }
+.app .overview-page .simple-stats.summary-grid .summary-progress { display: block; height: 4px; margin-top: 16px; background: #353535; border-radius: 2px; overflow: hidden; }
+.app .overview-page .simple-stats.summary-grid .summary-progress > span { display: block; width: 100%; height: 100%; transform-origin: left; background: #f0c92c; border-radius: inherit; transition: transform 400ms var(--motion-ease); }
+.app .overview-page .simple-stats.summary-grid .metric-2 .summary-icon { background: #2b2716; color: #f0c92c; }
+.app .overview-page .simple-stats.summary-grid .metric-2 strong { color: #f0c92c; }
+.app .overview-page .simple-stats.summary-grid .metric-3 { background: #121212; border-style: dashed; }
+.app .overview-page .simple-stats.summary-grid .metric-3 strong { color: #c1c1c1; font-size: 34px; letter-spacing: -.7px; line-height: 1.55; }
+.app .overview-page .simple-stats.summary-grid .stat-card:hover { border-color: #77705a; background: #202020; }
+.app .overview-page .simple-stats.summary-grid .summary-card-top > svg { transition: transform 220ms var(--motion-ease), color 180ms ease; }
+.app .overview-page .simple-stats.summary-grid .stat-card:hover .summary-card-top > svg { color: #f0c92c; transform: translate(2px,-2px); }
+@media (max-width: 1250px) {
+  .app .overview-page .simple-stats.summary-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+}
+@media (max-width: 600px) {
+  .app .overview-page .simple-stats.summary-grid { gap: 12px; }
+  .app .overview-page .simple-stats.summary-grid .stat-card { padding: 16px; min-height: 200px; }
+  .app .overview-page .simple-stats.summary-grid .summary-card-top { margin-bottom: 20px; }
+  .app .overview-page .simple-stats.summary-grid .summary-icon { width: 36px; height: 36px; border-radius: 8px; }
+  .app .overview-page .simple-stats.summary-grid .stat-top { font-size: 16px; }
+  .app .overview-page .simple-stats.summary-grid strong { font-size: 40px; }
+  .app .overview-page .simple-stats.summary-grid .metric-3 strong { font-size: 28px; line-height: 1.65; }
+  .app .overview-page .simple-stats.summary-grid .summary-share { font-size: 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .app .overview-page .simple-stats.summary-grid :is(.summary-card-top > svg,.summary-progress > span) { transition: none; }
+}

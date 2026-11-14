@@ -1,4 +1,5 @@
 import type { Database, Payment } from '@/types';
+import { displayMemberId } from './member-numbers';
 
 export const paymentImportFields = [
  ['memberId','Member ID'],['membershipId','Membership ID'],['amount','Amount'],['date','Payment date'],
@@ -16,7 +17,10 @@ export function validatePaymentImport(rows:PaymentImportRow[],mapping:Partial<Re
  const fingerprints=new Set(db.payments.map(paymentFingerprint));
  return rows.map(row=>{
   const value=(field:PaymentImportField)=>String(row[mapping[field]||'']||'').trim();
-  const memberId=value('memberId'),member=db.members.find(m=>m.id===memberId);
+  const enteredId=value('memberId');
+  const candidates=db.members.filter(m=>displayMemberId(m)===enteredId&&(branch==='all'||m.branchId===branch)&&(!value('membershipId')||db.memberships.some(ms=>ms.id===value('membershipId')&&ms.memberId===m.id)));
+  const member=/^\d+$/.test(enteredId) ? (candidates.length===1?candidates[0]:undefined) : db.members.find(m=>m.id===enteredId);
+  const memberId=member?.id||enteredId;
   const memberships=db.memberships.filter(m=>m.memberId===memberId);
   const membershipId=value('membershipId')||(memberships.length===1?memberships[0].id:'');
   const rawAmount=value('amount').replace(/^RM\s*/i,'');

@@ -12,6 +12,14 @@ function fixture(){
 }
 const mapping:Partial<Record<PaymentImportField,string>>={memberId:'Member',membershipId:'Membership',amount:'Amount',date:'Date',method:'Method',status:'Status',reference:'Reference',id:'ID'};
 const row={Member:'HYB-DD-00001',Amount:'170.50',Date:'2026-10-24',Method:'cash',Reference:'TRANSFER-001'};
+test('short member numbers resolve within the branch without attaching payments to a recycled former owner',()=>{
+ const db=fixture();db.members[0].membershipNumber=null;
+ db.members.push({...db.members[0],id:'new-owner',membershipNumber:1});
+ db.memberships.push({...db.memberships[0],id:'new-membership',memberId:'new-owner'});
+ const result=validatePaymentImport([{...row,Member:'01',Membership:'new-membership'}],mapping,db,'dd')[0];
+ assert.deepEqual(result.errors,[]);assert.equal(result.payment.memberId,'new-owner');
+ assert.ok(validatePaymentImport([{...row,Member:'01',Membership:'membership'}],mapping,db,'dd')[0].errors.length);
+});
 test('payment imports resolve a single membership and normalize method and default status',()=>{
  const result=validatePaymentImport([row],mapping,fixture(),'dd')[0];
  assert.deepEqual(result.errors,[]);

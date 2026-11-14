@@ -7,3 +7,5 @@ node_modules/
 *.tsbuildinfo
 .npm-cache/
 tmp/pdfs/
+.vercel
+.env*

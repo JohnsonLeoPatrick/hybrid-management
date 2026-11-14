@@ -1,13 +1,14 @@
 import type { Database, Member } from '../types';
 import { today, uid } from './utils';
+import { displayMemberId } from './member-numbers';
 
 export function searchMembers(members: Member[], query: string): Member[] {
  const term = query.trim().toLowerCase();
  if (!term) return [];
  const digits = term.replace(/\D/g, '');
- return members.filter(member => [member.id, member.name, member.phone].some(value => value.toLowerCase().includes(term)) ||
+ return members.filter(member => [displayMemberId(member), member.id, member.name, member.phone].some(value => value.toLowerCase().includes(term)) ||
   (digits.length >= 3 && /^[+\d\s()-]+$/.test(term) && member.phone.replace(/\D/g, '').includes(digits)))
-  .sort((a, b) => Number(b.id.toLowerCase() === term) - Number(a.id.toLowerCase() === term) || a.name.localeCompare(b.name));
+  .sort((a, b) => Number(displayMemberId(b).toLowerCase() === term) - Number(displayMemberId(a).toLowerCase() === term) || a.name.localeCompare(b.name));
 }
 
 export function checkIn(db: Database, memberId: string, classId: string | null, date = today()): Database {

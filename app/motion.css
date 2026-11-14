@@ -1,0 +1,118 @@
+/* Motion stays brief and responds to interaction; reduced motion removes the effects. */
+:root { --motion-ease: cubic-bezier(.22,1,.36,1); --motion-fast: 160ms; --motion-panel: 260ms; }
+@keyframes workspace-arrive {
+  from { opacity: 0; transform: translateY(6px); filter: blur(4px); }
+  to { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+@keyframes surface-arrive {
+  from { opacity: 0; transform: translateY(4px) scale(.99); filter: blur(3px); }
+  to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .app .section-transition { animation: workspace-arrive 300ms var(--motion-ease) both; }
+  .app .modal-backdrop { animation: popup-backdrop 180ms ease both; }
+  .app .modal-backdrop > .modal { animation: surface-arrive 280ms var(--motion-ease) both; }
+  .app .toast, .app .check-in-results, .app .check-in-selected, .app .check-in-success {
+    animation: surface-arrive 220ms var(--motion-ease) both;
+  }
+  .app .dashboard-layout > :is(.simple-stats,.reception-actions,.dashboard-insights,.latest-members) {
+    animation: workspace-arrive 320ms var(--motion-ease) both;
+  }
+  .app .dashboard-layout > .simple-stats { animation-delay: 35ms; }
+  .app .dashboard-layout > .reception-actions { animation-delay: 60ms; }
+  .app .dashboard-layout > .dashboard-insights { animation-delay: 85ms; }
+  .app .dashboard-layout > .latest-members { animation-delay: 110ms; }
+  .app .overview-page .reception-actions > button,
+  .app .overview-page .simple-stats .stat-card {
+    transition: background-color 180ms ease, border-color 180ms ease, translate 220ms var(--motion-ease);
+  }
+  .app .overview-page .reception-actions > button:hover,
+  .app .overview-page .simple-stats .stat-card:hover { translate: 0 -2px; }
+  .app :is(.primary,.secondary,.icon-button,.text-button) {
+    transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease, translate 180ms var(--motion-ease);
+  }
+  .app :is(.primary,.secondary):active:not(:disabled) { translate: 0 1px; }
+  .app .attendance-history .panel-heading > button > svg { transition: rotate 240ms var(--motion-ease); }
+  .app .attendance-history .panel-heading > button[aria-expanded=true] > svg { rotate: 180deg; }
+  #attendance-history-content {
+    opacity: 0; filter: blur(4px); transform: translateY(-4px);
+    transition: opacity 220ms ease, filter 220ms ease, transform 260ms var(--motion-ease), display 260ms allow-discrete;
+  }
+  #attendance-history-content:not([hidden]) { opacity: 1; filter: blur(0); transform: translateY(0); }
+  #attendance-history-content[hidden] { pointer-events: none; }
+  @starting-style {
+    #attendance-history-content:not([hidden]) { opacity: 0; filter: blur(4px); transform: translateY(-4px); }
+  }
+}
+/* Native customizable selects keep their form semantics, validation, and keyboard handling. */
+@supports (appearance: base-select) {
+  :is(.app,.login,.public-registration) select:not([multiple]):not([size]),
+  :is(.app,.login,.public-registration) select:not([multiple]):not([size])::picker(select) {
+    appearance: base-select;
+  }
+  :is(.app,.login,.public-registration) select:not([multiple]):not([size]) {
+    align-items: center; gap: 12px; cursor: pointer;
+    transition: border-color 180ms ease, background-color 180ms ease;
+  }
+  :is(.app,.login,.public-registration) select::picker-icon {
+    color: #f0c92c; transition: rotate 240ms var(--motion-ease); flex-shrink: 0;
+  }
+  :is(.app,.login,.public-registration) select:open::picker-icon { rotate: 180deg; }
+  :is(.app,.login,.public-registration) select::picker(select) {
+    background: #191919; color: #f2f2f2; border: 1px solid #4b4b4b;
+    border-radius: 10px; padding: 6px; margin-block: 6px;
+    max-block-size: min(360px,60dvh); overflow-y: auto;
+    box-shadow: 0 16px 48px #0008; font-size: 16px;
+    opacity: 0; filter: blur(5px); transform: translateY(-6px) scale(.985);
+    transform-origin: top center;
+    transition: opacity 180ms ease, filter 220ms ease, transform 260ms var(--motion-ease), display 260ms allow-discrete, overlay 260ms allow-discrete;
+  }
+  :is(.app,.login,.public-registration) select:open::picker(select) {
+    opacity: 1; filter: blur(0); transform: translateY(0) scale(1);
+  }
+  @starting-style {
+    :is(.app,.login,.public-registration) select:open::picker(select) {
+      opacity: 0; filter: blur(5px); transform: translateY(-6px) scale(.985);
+    }
+  }
+  :is(.app,.login,.public-registration) select option {
+    display: flex; align-items: center; gap: 12px; min-height: 44px;
+    padding: 10px 12px; border-radius: 5px; color: #f2f2f2; background: transparent;
+    font-size: 16px; line-height: 1.5; white-space: normal; cursor: pointer;
+    transition: background-color 120ms ease, color 120ms ease;
+  }
+  :is(.app,.login,.public-registration) select option:is(:hover,:focus) { background: #303030; outline: none; }
+  :is(.app,.login,.public-registration) select option:checked { background: #f0c92c; color: #111; }
+  :is(.app,.login,.public-registration) select option:disabled { color: #aaa; cursor: not-allowed; }
+  :is(.app,.login,.public-registration) select option::checkmark { color: currentColor; margin-left: auto; order: 1; }
+}
+@supports (interpolate-size: allow-keywords) {
+  @media (prefers-reduced-motion: no-preference) {
+    .app details { interpolate-size: allow-keywords; }
+    .app details::details-content {
+      block-size: 0; opacity: 0; filter: blur(3px); overflow: clip;
+      transition: block-size 280ms var(--motion-ease), opacity 200ms ease, filter 240ms ease, content-visibility 280ms allow-discrete;
+    }
+    .app details[open]::details-content { block-size: auto; opacity: 1; filter: blur(0); }
+    /* File menus are positioned popovers; keep their overflow available outside the trigger. */
+    .app details.file-actions::details-content { overflow: visible; }
+  }
+}
+@media (max-width: 1024px) and (prefers-reduced-motion: no-preference) {
+  .app .sidebar {
+    opacity: 0; filter: blur(4px);
+    transition: transform 300ms var(--motion-ease), opacity 180ms ease, filter 260ms ease, visibility 300ms;
+  }
+  .app .sidebar.open { opacity: 1; filter: blur(0); }
+  .app .mobile-scrim { animation: popup-backdrop 180ms ease both; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .app *, .app *::before, .app *::after,
+  .login *, .public-registration *,
+  :is(.app,.login,.public-registration) select::picker(select),
+  :is(.app,.login,.public-registration) select::picker-icon,
+  .app details::details-content {
+    animation: none !important; transition: none !important;
+    filter: none !important; translate: none !important;
+  }
+}

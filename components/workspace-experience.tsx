@@ -46,7 +46,7 @@ export function WorkspaceExperience({ children }: { children: React.ReactNode })
    if (dialog) {
     if (!wasOpen) previousFocus.current = document.activeElement as HTMLElement;
     restoreBackground();
-    document.querySelectorAll<HTMLElement>('.app main, .app .sidebar, .app .skip-link, .app .mobile-scrim, [role="dialog"]').forEach(element => {
+    document.querySelectorAll<HTMLElement>('.app main, .app .sidebar, .app .mini-sidebar, .app .sidebar-edge-trigger, .app .skip-link, .app .mobile-scrim, [role="dialog"]').forEach(element => {
      if(element.matches('.mobile-scrim')&&dialog.id==='workspace-navigation')return;
      if (!element.contains(dialog)) { inertElements.set(element, element.inert); element.inert = true; }
     });

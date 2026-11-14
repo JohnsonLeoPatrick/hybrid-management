@@ -1,3 +1,4 @@
+import { displayMemberId } from './member-numbers';
 import type { Database, Payment } from '@/types';
 
 export const invoiceCompany = {
@@ -34,7 +35,7 @@ export function buildInvoice(db: Database, payment: Payment) {
  const branch = db.branches.find(item => item.id === member?.branchId);
  return {
   number, company: invoiceCompany, date: payment.date, dateLabel: invoiceDate(payment.date),
-  paymentId: payment.id, memberId: payment.memberId, memberName: member?.name || 'Archived member',
+  paymentId: payment.id, memberId: member ? displayMemberId(member) : payment.memberId, memberName: member?.name || 'Archived member',
   memberAddress: member?.address || '', memberEmail: member?.email || '', memberPhone: member?.phone || '',
   branch: branch?.name || '', description: plan?.name || 'Membership payment',
   period: membership ? `${invoiceDate(membership.start)} - ${invoiceDate(membership.expiry)}` : '',

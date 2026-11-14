@@ -2,14 +2,16 @@ import { Database, Membership } from '@/types';
 export const today = () => new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kuala_Lumpur' });
 export const uid = () => crypto.randomUUID();
 export function addMonths(date: string, months: number) { const [y,m,d] = date.split('-').map(Number); const last = new Date(Date.UTC(y,m-1+months+1,0)).getUTCDate(); return new Date(Date.UTC(y,m-1+months,Math.min(d,last))).toISOString().slice(0,10); }
+// The paid anniversary day is included; expiry is the first invalid day.
+export function membershipExpiry(start: string, months: number) { const anniversary = addMonths(start, months); return new Date(Date.parse(anniversary) + 86400000).toISOString().slice(0,10); }
 export function daysLeft(expiry: string, now = today()) { return Math.round((Date.parse(expiry)-Date.parse(now))/86400000); }
-export function status(m?: Membership, now = today()) { if (!m) return 'EXPIRED'; if(m.state !== 'NORMAL') return m.state; if(daysLeft(m.start,now)>0)return 'UPCOMING'; const days = daysLeft(m.expiry,now); return days < 0 ? 'EXPIRED' : days <= 30 ? 'EXPIRING SOON' : 'ACTIVE'; }
+export function status(m?: Membership, now = today()) { if (!m) return 'EXPIRED'; if(m.state !== 'NORMAL') return m.state; if(daysLeft(m.start,now)>0)return 'UPCOMING'; const days = daysLeft(m.expiry,now); return days <= 0 ? 'EXPIRED' : days <= 30 ? 'EXPIRING SOON' : 'ACTIVE'; }
 export function membershipTiming(m?: Membership, now = today()) {
  if (!m) return 'No membership';
  const startsIn = daysLeft(m.start,now);
  if (startsIn > 0) return `Starts in ${startsIn} ${startsIn===1?'day':'days'}`;
  const remaining = daysLeft(m.expiry,now);
- if (remaining === 0) return 'Expires today';
+ if (remaining === 0) return 'Expired today';
  const days = Math.abs(remaining), unit = days===1?'day':'days';
  return remaining < 0 ? `Expired ${days} ${unit} ago` : `${days} ${unit} left`;
 }

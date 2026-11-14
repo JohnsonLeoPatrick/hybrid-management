@@ -1,0 +1,266 @@
+{
+  "title": "HYBRID GYM MEMBERSHIP APPLICATION",
+  "source": "https://docs.google.com/forms/d/e/1FAIpQLSc9bZ1KPxHPgIWnU38APYwkp7eZd_oyPH9ig43F_d_eryMcbg/viewform",
+  "fields": [
+    {
+      "id": "835335530",
+      "label": "Full Name",
+      "description": "",
+      "type": 0,
+      "required": true,
+      "options": []
+    },
+    {
+      "id": "1816972513",
+      "label": "Date of birth",
+      "description": "",
+      "type": 0,
+      "required": true,
+      "options": []
+    },
+    {
+      "id": "1390327371",
+      "label": "Age",
+      "description": "",
+      "type": 0,
+      "required": true,
+      "options": []
+    },
+    {
+      "id": "1034751384",
+      "label": "Current address",
+      "description": "",
+      "type": 1,
+      "required": true,
+      "options": []
+    },
+    {
+      "id": "260300504",
+      "label": "Gender",
+      "description": "",
+      "type": 2,
+      "required": true,
+      "options": [
+        "Male",
+        "Female"
+      ]
+    },
+    {
+      "id": "1298609699",
+      "label": "Contact number",
+      "description": "",
+      "type": 0,
+      "required": true,
+      "options": []
+    },
+    {
+      "id": "2011207499",
+      "label": "Emergency contact",
+      "description": "",
+      "type": 3,
+      "required": true,
+      "options": [
+        "Name :",
+        "Phone no:"
+      ]
+    },
+    {
+      "id": "1264896309",
+      "label": "Relationship status",
+      "description": "",
+      "type": 2,
+      "required": false,
+      "options": [
+        "Single",
+        "Married",
+        "Other"
+      ]
+    },
+    {
+      "id": "1512793015",
+      "label": "HEALTH BACKGROUND SCREENING",
+      "description": "",
+      "type": 8,
+      "required": false,
+      "options": []
+    },
+    {
+      "id": "288193178",
+      "label": "Have you ever had any heart condition, heart disease, heart attack or a family history of heart-related illnesses?",
+      "description": "",
+      "type": 2,
+      "required": true,
+      "options": [
+        "Yes",
+        "No"
+      ]
+    },
+    {
+      "id": "13163432",
+      "label": "Do you feel any discomfort or pain when performing physical activities or exercising?",
+      "description": "",
+      "type": 2,
+      "required": true,
+      "options": [
+        "Yes",
+        "No"
+      ]
+    },
+    {
+      "id": "685185184",
+      "label": "Have you ever experienced dizziness, fainting, shortness of breath or loss of balance during while exercising or being active?",
+      "description": "",
+      "type": 2,
+      "required": true,
+      "options": [
+        "Yes",
+        "No"
+      ]
+    },
+    {
+      "id": "1043199006",
+      "label": "Do you have diabetes or suffer from high blood pressure?",
+      "description": "",
+      "type": 2,
+      "required": true,
+      "options": [
+        "Yes",
+        "No"
+      ]
+    },
+    {
+      "id": "1863285032",
+      "label": "Do you suffer from asthma?",
+      "description": "",
+      "type": 2,
+      "required": true,
+      "options": [
+        "Yes",
+        "No"
+      ]
+    },
+    {
+      "id": "1060537411",
+      "label": "Do you have any bone or joint condition that might worsen with increased physical activity?",
+      "description": "",
+      "type": 2,
+      "required": true,
+      "options": [
+        "Yes",
+        "No"
+      ]
+    },
+    {
+      "id": "1565434560",
+      "label": "Do you have any health issues, injuries or medications that could stop you from exercising?",
+      "description": "",
+      "type": 2,
+      "required": true,
+      "options": [
+        "Yes",
+        "No"
+      ]
+    },
+    {
+      "id": "1807771573",
+      "label": "Please provide further tails if you selected \"Yes\" to any questions above.",
+      "description": "",
+      "type": 1,
+      "required": false,
+      "options": []
+    },
+    {
+      "id": "1170131668",
+      "label": "How did you find out about Hybrid Combative Academy and Gym?",
+      "description": "",
+      "type": 2,
+      "required": true,
+      "options": [
+        "I live nearby",
+        "Google",
+        "Family/Friends",
+        "Social media",
+        "Other"
+      ]
+    },
+    {
+      "id": "2022995645",
+      "label": "RULES AND REGULATIONS",
+      "description": "1. Any member or walk-in who performs or attempts any unsafe exercises, behaves inappropriately or engages in indecent, vulgar, disruptive or non-compliant conduct will be required to leave the gym immediately without a refund. \n2. All members and walk-ins must wear appropriate gym attire before entering. For the gym and weights section, sports shoes are strictly compulsory. On the martial arts/mat area, either barefoot or with non-slip socks are allowed. Boxing, wrestling and MMA shoes are allowed provided they are cleaned before usage on the mat.\n3. Any member or walk-in showing signs of intoxication, fever or any potentially contagious or dangerous symptoms will be asked to leave without a refund. \n4. CCTV is for gym security purposes only. If a member or walk-in requires footage, they must provide a police report specifying the details and must be duly submitted to Hybrid's management. Any cost incurred must be covered by the requesting party. \n5. In the event that federal, state or local authorities mandate the closure of the premises for any reason, no refunds will be provided to members or walk-ins. \n6. Eating in the gym is prohibited except that which is provided by the gym. Drinking is allowed. \n7. All members and walk-ins are required to ask for and keep their receipts for inspection purposes.\n8. All members and walk-ins must register upon entry, providing their name as per IC and an additional contact number for emergencies. \n9. Members and walk-ins must disclose any illness or disease before entry. Refunds will not be provided afterwards. \n10. Hybrid will be closed on certain public holidays. Please check the notice board, our social media pages or inquire at the gym for details. \n11. For personal training enquiries, please contact our management. Hybrid is not responsible and shall not be liable for any injuries arising from personal training sessions. Engagement of a personal trainer is purely the choice of the customer.\n12. Children aged 12 and below are not allowed to enter the gym unless supervised by a knowledgeable adult or personal trainer. \n13. Members and walk-ins are encouraged to use the lockers. Usage is free of charge. Lost locker keys will incur a fee of RM10 or at current market price. \n14. Any promotional shoots, photos or videos intended for advertising or branding purposes must receive prior   approval from management 1 week in advance. A fee may apply to compensate for any inconvenience to other patrons and gym supervisor. \n15. Members and walk-ins that use any of the equipment does so at their own risk. Hybrid's management is not responsible for any injuries, fractures, sprains or other medical conditions sustained during exercise. However, management will provide minimal first aid while waiting for an ambulance, friend or next of kin. First aid may include muscle rubs, ointments, ice packs, bandages and disinfectants only. \n16. Personal items cannot be stored in the gym. If found, it will be thrown immediately. Hybrid is not liable for any lost belongings. \n17. Banned drugs or anabolic substances are strictly prohibited. If found, the person's face will be displayed on the notice board. \n18. Members and walk-ins must not remove their clothing in the gym. Please do so in the restroom and be considerate of others. \n19. This is a gym, not an office. Please refrain from using your laptop or mobile devices for work. \n20. A member or walk-in is not a representative or agent of Hybrid unless explicitly appointed by management.  All inquiries from individuals or authorities must be directed to Hybrid's management. \n21. For promotional and branding purposes, members and walk-ins may be photographed in the gym. Hybrid reserves the right to use any images captured in the gym. \n22. Members and walk-ins cannot promote, sell or distribute any products in the gym unless they have written approval from the management. \n23. Any member or walk-in who damages or breaks any gym equipment will be responsible for the replacement and installation cost. Transportation cost will be charged according to the current market rate. \n24. Please be mindful when charging your devices, as other members or walk-ins may be waiting to use the plug points. \n25.  All members and walk-ins are encouraged to use the cardio section to warm up before exercising to prevent injuries or muscle strains. Memmebrs and walk-ins may also request for assistance such as ice packs, muscle rubs or ointments, which are to be applied only to injured areas. (Strictly non-consumable)\n26. Please use the sanitizers provided by the gym to wipe down equipment right after use. \n27. Members and walk-ins are strictly prohibited from connecting personal devices via Bluetooth to the gym's amplifier. The amplifier, iPad and music selection are strictly for the gym's usage. \n28. Members must not change dumbbell settings in the free weights area and advised to not slam or drop weights. Please re-rack weights and bars after use. \n29. Any member or walk-in who defames, slanders or make false and unverified statements about Hybrid or its management on any social media platforms may be subject to legal action and/or a police report filed by Hybrid management. \n30. For safety reasons, children 12 years of age and below, including babies and toddlers, should not be brought to the gym. \n31. Fans are for exercise use only, not for sleeping or daydreaming in the gym. \n32. Hybrid Combative Academy & Gym management reserves the absolute right to ask anyone to leave the premises on which terms may not be contained herein without refund. \n33. Updated terms and conditions may be applied from time to time without prior notice.      ",
+      "type": 8,
+      "required": false,
+      "options": []
+    },
+    {
+      "id": "1407106604",
+      "label": "Parent/Guardian  (Below 18 years old members)",
+      "description": "",
+      "type": 3,
+      "required": false,
+      "options": [
+        "Name :",
+        "Phone no. :"
+      ]
+    },
+    {
+      "id": "1846661132",
+      "label": "I have shown this to my Parent/Guardian and they have given the permission for me to join the gym.",
+      "description": "",
+      "type": 2,
+      "required": false,
+      "options": [
+        "Yes"
+      ]
+    },
+    {
+      "id": "1873781823",
+      "label": "I have read the whole of this document and understand it.",
+      "description": "",
+      "type": 2,
+      "required": true,
+      "options": [
+        "Yes"
+      ]
+    },
+    {
+      "id": "1429873490",
+      "label": "I consent to the person named in this acknowledgement and release participating in the activity.",
+      "description": "",
+      "type": 2,
+      "required": true,
+      "options": [
+        "Yes"
+      ]
+    },
+    {
+      "id": "497265150",
+      "label": "I am aware of the risks, dangers and obligations set out above in the acknowledgement and release.",
+      "description": "",
+      "type": 2,
+      "required": true,
+      "options": [
+        "Yes"
+      ]
+    },
+    {
+      "id": "780259237",
+      "label": "In consideration of the person named in this acknowledgement and release being accepted to participate in the activity I agree to the release and identify Hybrid Gym in the same manner and to the same effect as if I were the person named in the acknowledgement and the person participating in the activity.",
+      "description": "",
+      "type": 2,
+      "required": true,
+      "options": [
+        "Yes"
+      ]
+    },
+    {
+      "id": "663793279",
+      "label": "I hereby am aware that payment has to be physically made at the counter of Hybrid Combative Academy and Gym.",
+      "description": "",
+      "type": 2,
+      "required": true,
+      "options": [
+        "Yes"
+      ]
+    }
+  ]
+}

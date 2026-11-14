@@ -1,0 +1,110 @@
+/* Fit navigation without shrinking the readable type; density follows available height. */
+.app .sidebar { padding: 16px 14px 12px; overflow: hidden; }
+.app .sidebar .brand { padding: 0 10px 24px; min-height: 52px; }
+.app .sidebar .brand small { font-size: 16px; line-height: 1.25; }
+.app .sidebar .branch-select { min-height: 40px; padding: 8px 10px; margin-bottom: 10px; }
+.app .sidebar nav { overflow: visible; padding-bottom: 0; }
+.app .sidebar .nav-group-label { padding: 18px 12px 10px; font-size: 16px; line-height: 1.2; }
+.app .sidebar .nav-item { min-height: 40px; height: 40px; padding: 8px 12px; margin-bottom: 6px; font-size: 16px; line-height: 1.25; }
+.app .sidebar .admin-folder { margin-top: 10px; padding-top: 8px; }
+.app .sidebar .admin-folder-trigger { min-height: 40px; padding: 8px 12px; font-size: 16px; line-height: 1.25; }
+.app .sidebar .admin-folder-links { padding-top: 4px; }
+.app .sidebar .admin-folder-links .nav-item { min-height: 36px; height: 36px; padding-block: 6px; }
+.app .sidebar .sidebar-bottom { padding-top: 8px; }
+.app .sidebar .user { margin-top: 0; padding: 10px 6px 0; }
+.app .sidebar .user small { margin-top: 0; font-size: 16px; line-height: 1.2; }
+@media (max-height: 800px) {
+  .app .sidebar { padding: 12px; }
+  .app .sidebar .brand { padding-bottom: 14px; min-height: 44px; }
+  .app .sidebar .academy-logo { width: 32px; height: 36px; }
+  .app .sidebar .branch-select { min-height: 36px; padding-block: 6px; }
+  .app .sidebar .nav-group-label { padding-top: 12px; padding-bottom: 6px; }
+  .app .sidebar .nav-item { min-height: 36px; height: 36px; padding-block: 6px; margin-bottom: 4px; }
+  .app .sidebar .admin-folder { margin-top: 10px; padding-top: 8px; }
+  .app .sidebar .admin-folder-trigger { min-height: 36px; padding-block: 6px; }
+  .app .sidebar .admin-folder-links .nav-item { min-height: 32px; height: 32px; padding-block: 4px; }
+  .app .sidebar .user { padding-top: 8px; }
+}
+@media (max-height: 650px) {
+  .app .sidebar .brand { padding-bottom: 8px; min-height: 36px; }
+  .app .sidebar .brand small, .app .sidebar .branch-select, .app .sidebar .nav-group-label, .app .sidebar .user small { display: none; }
+  .app .sidebar .nav-item { min-height: 34px; height: 34px; padding-block: 6px; margin-bottom: 2px; }
+  .app .sidebar .admin-folder-trigger { min-height: 34px; padding-block: 6px; }
+  .app .sidebar .admin-folder-links .nav-item { min-height: 30px; height: 30px; padding-block: 4px; margin-bottom: 0; }
+  .app .sidebar .sidebar-bottom { padding-top: 4px; }
+  .app .sidebar .user { min-height: 40px; padding-top: 6px; }
+}
+@media (max-height: 540px) {
+  .app .sidebar { padding: 8px 12px; }
+  .app .sidebar .brand { min-height: 32px; padding-bottom: 4px; }
+  .app .sidebar .academy-logo { width: 24px; height: 28px; }
+  .app .sidebar .nav-item, .app .sidebar .admin-folder-links .nav-item { min-height: 30px; height: 30px; padding-block: 4px; margin-bottom: 0; }
+  .app .sidebar .admin-folder { margin-top: 4px; padding-top: 4px; }
+  .app .sidebar .admin-folder-trigger { min-height: 30px; padding-block: 4px; }
+  .app .sidebar .admin-folder-links { padding-top: 2px; }
+}
+/* A narrow edge target reveals an overlay rail without shifting the workspace. */
+.app .sidebar-edge-trigger { position: fixed; inset: 0 auto 0 0; width: 12px; z-index: 56; padding: 0; color: #f0c92c; background: transparent; }
+.app .sidebar-edge-trigger::before { content: ''; position: absolute; left: 0; top: calc(50% - 24px); width: 4px; height: 48px; background: #f0c92c; border-radius: 0 4px 4px 0; opacity: .65; }
+.app .sidebar-edge-trigger > svg { position: absolute; left: 0; top: calc(50% - 8px); opacity: 0; }
+.app .sidebar-edge-trigger:focus-visible { width: 24px; background: #1b1b1b; }
+.app .sidebar-edge-trigger:focus-visible > svg { opacity: 1; }
+.app .mini-sidebar { position: fixed; inset: 0 auto 0 0; width: 68px; padding: 12px 10px; z-index: 57; display: flex; flex-direction: column; gap: 10px; background: #141414; border-right: 1px solid #3b3b3b; box-shadow: 8px 0 24px #0005; transform: translateX(-100%); opacity: 0; filter: blur(3px); visibility: hidden; transition: transform 240ms var(--motion-ease), opacity 160ms ease, filter 220ms ease, visibility 240ms; }
+.app .mini-sidebar.is-open { transform: translateX(0); opacity: 1; filter: blur(0); visibility: visible; }
+.app .mini-sidebar nav { display: flex; flex-direction: column; gap: 4px; }
+.app .mini-sidebar :is(nav > a,.mini-pin,.mini-profile,.mini-admin-folder > summary) { position: relative; display: grid; place-items: center; width: 46px; min-height: 40px; padding: 8px; border-radius: 7px; color: #c9c9c9; text-decoration: none; cursor: pointer; list-style: none; }
+.app .mini-sidebar :is(a,button,summary):hover { color: #f0c92c; background: #282828; }
+.app .mini-sidebar nav > a[aria-current=page] { color: #111; background: #f0c92c; }
+.app .mini-sidebar .mini-pin { color: #f0c92c; border-bottom: 1px solid #383838; border-radius: 0; padding-bottom: 12px; }
+.app .mini-sidebar .mini-profile { margin-top: auto; border-top: 1px solid #383838; border-radius: 0; }
+.app .mini-profile > span:first-child { display: grid; place-items: center; width: 30px; height: 30px; border: 1px solid #4a4425; border-radius: 50%; background: #292510; color: #f0c92c; font-size: 16px; }
+.app .mini-tooltip { position: absolute; left: calc(100% + 12px); top: 50%; transform: translateY(-50%) translateX(-4px); opacity: 0; visibility: hidden; pointer-events: none; white-space: nowrap; padding: 8px 12px; background: #252525; color: #f2f2f2; border: 1px solid #474747; border-radius: 6px; font-size: 16px; line-height: 1.4; filter: blur(3px); transition: opacity 140ms ease, transform 180ms var(--motion-ease), filter 180ms ease; }
+.app .mini-sidebar :is(a,button,summary):is(:hover,:focus-visible) > .mini-tooltip { opacity: 1; visibility: visible; transform: translateY(-50%) translateX(0); filter: blur(0); }
+.app .mini-admin-folder { position: relative; margin-top: 4px; border-top: 1px solid #383838; padding-top: 4px; }
+.app .mini-admin-folder summary::-webkit-details-marker { display: none; }
+.app .mini-admin-folder summary::marker { content: ''; }
+.app .mini-admin-folder::details-content { overflow: visible; block-size: auto; }
+.app .mini-admin-links { position: absolute; left: 100%; bottom: 0; width: 210px; padding: 8px; border: 1px solid #414141; border-radius: 8px; background: #1b1b1b; box-shadow: 0 8px 24px #0006; }
+.app .mini-admin-links a { display: flex; align-items: center; gap: 12px; min-height: 40px; padding: 8px 12px; color: #dedede; font-size: 16px; line-height: 1.3; text-decoration: none; border-radius: 5px; }
+.app .mini-admin-links a[aria-current=page] { background: #f0c92c; color: #111; }
+@media (max-height: 600px) {
+  .app .mini-sidebar { padding-block: 6px; gap: 4px; }
+  .app .mini-sidebar nav { gap: 0; }
+  .app .mini-sidebar :is(nav > a,.mini-pin,.mini-profile,.mini-admin-folder > summary) { min-height: 32px; height: 32px; padding-block: 4px; }
+  .app .mini-sidebar .mini-pin { padding-bottom: 4px; }
+  .app .mini-admin-folder { margin-top: 2px; padding-top: 2px; }
+}
+@media (max-width: 1024px) { .app .sidebar-edge-trigger, .app .mini-sidebar { display: none; } }
+@media (prefers-reduced-motion: reduce) { .app .mini-sidebar, .app .mini-tooltip { transition: none; } }
+@media (max-height: 950px) {
+  .app .sidebar .admin-folder { position: relative; }
+  .app .sidebar .admin-folder::details-content { overflow: visible; block-size: auto; }
+  .app .sidebar .admin-folder-links { position: absolute; left: 0; right: 0; bottom: calc(100% + 4px); margin: 0; padding: 6px; z-index: 5; border: 1px solid #4a4a4a; border-radius: 8px; background: #202020; box-shadow: 0 -8px 24px #0006; }
+}
+/* Share available height across the navigation rows rather than leaving it below them. */
+.app .sidebar nav { display: flex; flex-direction: column; gap: clamp(8px,1.3dvh,14px); }
+.app .sidebar nav > .nav-group:not(details) { display: flex; flex-direction: column; min-height: 0; gap: clamp(4px,.7dvh,8px); }
+.app .sidebar nav > .nav-group:first-child { flex: 5 1 66px; }
+.app .sidebar nav > .nav-group:nth-child(2):not(details) { flex: 2 1 46px; }
+.app .sidebar nav > .nav-group:not(details) > .nav-item { flex: 1 1 0; min-height: 36px; max-height: none; height: auto; margin-bottom: 0; padding: 8px 12px; }
+.app .sidebar .nav-group-label { flex-shrink: 0; padding: 8px 12px 6px; }
+.app .sidebar nav > .admin-folder { flex: 0 0 auto; margin-top: 0; padding-top: 12px; }
+.app .sidebar .admin-folder-trigger { min-height: 44px; }
+.app .sidebar .sidebar-bottom { padding-top: 12px; }
+@media (max-height: 650px) {
+  .app .sidebar nav { gap: 8px; }
+  .app .sidebar nav > .nav-group:not(details) { gap: 4px; }
+  .app .sidebar nav > .nav-group:not(details) > .nav-item { min-height: 30px; padding-block: 4px; }
+  .app .sidebar nav > .admin-folder { padding-top: 6px; }
+  .app .sidebar .admin-folder-trigger { min-height: 34px; }
+  .app .sidebar .sidebar-bottom { padding-top: 6px; }
+}
+
+@media (max-height: 650px) {
+  .app .sidebar nav > .nav-group:first-child { flex-basis: 16px; }
+  .app .sidebar nav > .nav-group:nth-child(2):not(details) { flex-basis: 4px; }
+}
+
+.app .sidebar .admin-folder-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 0 4px 6px 12px; margin-bottom: 4px; border-bottom: 1px solid #3c3c3c; color: #c5c5c5; font-size: 16px; }
+.app .sidebar .admin-folder-heading button { display: grid; place-items: center; width: 40px; height: 40px; flex-shrink: 0; border-radius: 6px; color: #ddd; }
+.app .sidebar .admin-folder-heading button:hover { color: #f0c92c; background: #303030; }

@@ -6,13 +6,13 @@ import { Database, Member } from '@/types';
 import { currentMemberships, memberStatus } from '@/lib/utils';
 
 const categories = [
- { key: 'ACTIVE', label: 'Active', color: '#91b89d' },
- { key: 'EXPIRING SOON', label: 'Expiring soon', color: '#e6c477' },
- { key: 'UPCOMING', label: 'Upcoming', color: '#8caed1' },
- { key: 'FROZEN', label: 'Frozen', color: '#b5a2c8' },
- { key: 'EXPIRED', label: 'Expired', color: '#d69585' },
- { key: 'CANCELLED', label: 'Cancelled', color: '#9a9da5' },
- { key: 'NONE', label: 'No membership', color: '#c2c8ba' },
+ { key: 'ACTIVE', label: 'Active', color: '#f0c92c' },
+ { key: 'EXPIRING SOON', label: 'Expiring soon', color: '#e0e0e0' },
+ { key: 'UPCOMING', label: 'Upcoming', color: '#a5a5a5' },
+ { key: 'FROZEN', label: 'Frozen', color: '#858585' },
+ { key: 'EXPIRED', label: 'Expired', color: '#686868' },
+ { key: 'CANCELLED', label: 'Cancelled', color: '#494949' },
+ { key: 'NONE', label: 'No membership', color: '#bfbfbf' },
 ];
 
 export function MembershipChart({ db, members }: { db: Database; members: Member[] }) {
@@ -40,7 +40,7 @@ export function MembershipChart({ db, members }: { db: Database; members: Member
  const active = slices.find(slice => slice.key === (hovered ?? focused ?? selected));
  const percent = (share: number) => `${Number(share.toFixed(1))}%`;
  return <section className="panel membership-overview" aria-label="Membership status breakdown">
-  <div className="panel-heading"><div><h2>Membership status</h2><p>One status per member.</p></div><span className="chart-period">Current</span></div>
+  <div className="panel-heading"><div><h2>Membership status</h2></div></div>
   <div className="status-chart">
    <div className="status-chart-visual">
     <div className="status-donut">
@@ -55,7 +55,7 @@ export function MembershipChart({ db, members }: { db: Database; members: Member
      </svg>
      <div className="status-donut-center"><strong>{members.length.toLocaleString()}</strong><span>{members.length === 1 ? 'member' : 'members'}</span></div>
     </div>
-    <div className="status-chart-summary" role="status" aria-atomic="true">{active ? <><i style={{background:active.color}}/>{active.label}<b>{percent(active.share)}</b></> : <span>{members.length ? 'Membership breakdown' : 'No members yet'}</span>}</div>
+    <div className="status-chart-summary" role="status" aria-atomic="true">{active ? <><i style={{background:active.color}}/>{active.label}<b>{percent(active.share)}</b></> : <span>{members.length ? '' : 'No members yet'}</span>}</div>
    </div>
    <div className="status-chart-details">
     <div className="status-legend-heading" aria-hidden="true"><span>Status</span><span>Members</span><span>Share</span></div>

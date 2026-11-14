@@ -1,9 +1,16 @@
-export interface RegistrationOptions { branch: { id: string; name: string; code: string } }
+export interface RegistrationOptions { branch: { id: string; name: string; code: string }; hybridFormVersion?: number }
+export interface HybridFormAnswers {
+ age: number; relationshipStatus: string; health: Record<string, string>;
+ healthDetails: string; referral: string; referralOther: string;
+ responses?: Record<string, string>;
+}
 export interface RegistrationDetails {
+ formAnswers?: HybridFormAnswers;
  name: string; phone: string; email: string; ic: string; dob: string; gender: string; address: string;
  emergencyName: string; emergencyPhone: string; notes: string; consent: boolean; company: string;
 }
 export interface RegistrationRequest {
+ formAnswers?: HybridFormAnswers;
  id: string; branchId: string; planId: string | null; name: string; phone: string; email: string; ic: string; dob: string | null;
  gender: string; address: string; emergencyName: string; emergencyPhone: string; notes: string;
  checkedInAt: string; status: 'PENDING' | 'APPROVED' | 'DECLINED'; memberId: string | null;

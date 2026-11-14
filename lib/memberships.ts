@@ -1,11 +1,11 @@
 import type { Database, Membership } from '@/types';
-import { addMonths, current, today, uid } from './utils';
+import { membershipExpiry, current, today, uid } from './utils';
 import { toCents } from './money';
 
 export interface MembershipSelection { planId: string; start: string; months: number; amount: number }
 
 export function addMembershipSelections(db: Database, memberId: string, selections: MembershipSelection[], method: string, paymentStatus: string, reference = ''): Database {
- if(!selections.length)throw Error('Choose at least one class membership');
+ if(!selections.length)throw Error('Choose at least one gym or class membership');
  if(new Set(selections.map(s=>s.planId)).size!==selections.length)throw Error('Choose each membership only once');
  let next=db;
  for(const choice of selections){
@@ -28,7 +28,7 @@ export function addPlanMembership(db: Database, memberId: string, planId: string
   if(!member.classIds.includes(classId)&&db.members.filter(m=>m.classIds.includes(classId)).length>=cls.capacity)throw Error(cls.name+' is full');
  }
  const previous=current(db,memberId,planId);
- const membership:Membership={id:uid(),memberId,planId,start,expiry:addMonths(start,months),state:'NORMAL',created:new Date().toISOString()};
+ const membership:Membership={id:uid(),memberId,planId,start,expiry:membershipExpiry(start,months),state:'NORMAL',created:new Date().toISOString()};
  return {membership,db:{...db,
   members:db.members.map(m=>m.id===memberId?{...m,classIds:[...new Set([...m.classIds,...plan.classes])]}:m),
   memberships:[...db.memberships,membership],

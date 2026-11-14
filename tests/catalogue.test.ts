@@ -3,9 +3,9 @@ import assert from 'node:assert/strict';
 import { academyPlans, academyClasses, upgradeDemoCatalogue } from '../lib/catalogue';
 import { seed } from '../lib/seed';
 test('advertised monthly prices and schedules match the academy card',()=>{
- assert.equal(academyPlans.length,7);
+ assert.equal(academyPlans.length,9);
  assert.equal(academyPlans.find(p=>p.name==='Jeet Kune Do & Kali')?.price,190);
- assert.ok(academyPlans.filter(p=>p.name!=='Jeet Kune Do & Kali').every(p=>p.price===170&&p.months===1));
+ assert.ok(academyPlans.filter(p=>p.classes.length>0&&p.name!=='Jeet Kune Do & Kali').every(p=>p.price===170&&p.months===1));
  assert.equal(academyClasses.find(c=>c.name==='Boxing')?.start,'20:00');
  assert.equal(academyClasses.filter(c=>c.name==='Kickboxing').length,2);
  assert.ok(academyClasses.every(c=>c.end===''));
@@ -16,7 +16,7 @@ test('existing demo upgrades retain members, paid amounts and custom plan prices
  const upgraded=upgradeDemoCatalogue(db);
  assert.deepEqual(upgraded.members,db.members);assert.deepEqual(upgraded.memberships,db.memberships);assert.deepEqual(upgraded.payments,db.payments);
  assert.equal(upgraded.plans.find(p=>p.id==='p1')?.active,false);
- assert.equal(upgraded.plans.filter(p=>p.active).length,7);
+ assert.equal(upgraded.plans.filter(p=>p.active).length,9);
  upgraded.plans.find(p=>p.id==='hybrid-boxing')!.price=180;
  assert.equal(upgradeDemoCatalogue(upgraded).plans.find(p=>p.id==='hybrid-boxing')?.price,180);
 });

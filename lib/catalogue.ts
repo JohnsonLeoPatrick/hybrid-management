@@ -21,6 +21,8 @@ export const academyPlans: Plan[] = [
  {id:'hybrid-muay-thai',name:'Muay Thai',months:1,price:170,description:'Friday 7:30 PM · Clinch work, power kicks, pad work & stamina',branchId:'dd',classes:['c1'],active:true},
  {id:'hybrid-tkd',name:'Tae Kwon Do (ITF)',months:1,price:170,description:'Thursday 5:00 PM (Kids) / Saturday 10:15 AM · Forms, precision sparring & discipline',branchId:'dd',classes:['tkd-thu','tkd-sat'],active:true},
  {id:'hybrid-bjj',name:'Brazilian Jiu-Jitsu',months:1,price:170,description:'Sunday 9:30 AM · Professor Azrai',branchId:'dd',classes:['bjj-sun'],active:true},
+ {id:'hybrid-gym-adult',name:'Normal Gym — Adult',months:1,price:90,description:'Adult gym membership. Gym access only; martial arts classes are sold separately.',branchId:'dd',classes:[],active:true},
+ {id:'hybrid-gym-student',name:'Normal Gym — Student',months:1,price:70,description:'Student gym membership. Gym access only; martial arts classes are sold separately.',branchId:'dd',classes:[],active:true},
 ];
 export const enquiryServices=[{name:'Body Building',label:'1-on-1',description:'Personalized coaching · Functional hypertrophy, fat loss & reset'},{name:'Arm Wrestling',label:'Specialty',description:'Technique & table time · Grip strength, positioning & tournament prep'}];
 
