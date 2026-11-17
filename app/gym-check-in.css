@@ -1,0 +1,11 @@
+.gym-check-in-qr { margin-bottom: 24px; }
+.public-gym-check-in .join-shell { max-width: 520px; }
+.public-gym-check-in .join-card h1 { font-size: clamp(28px, 6vw, 36px); }
+.public-gym-check-in form { margin-top: 26px; }
+.public-gym-check-in .field { display: flex; flex-direction: column; gap: 10px; }
+.public-gym-check-in .field input { width: 100%; min-height: 52px; }
+.public-gym-check-in .hint { line-height: 1.6; margin-top: 12px; }
+.public-gym-check-in .brand { display: flex; align-items: center; gap: 14px; }
+.public-gym-check-in .join-success h1:focus { outline: none; }
+.public-gym-check-in .join-success .secondary { min-height: 48px; }
+.gym-check-in-qr .qr-display p { text-align: center; }

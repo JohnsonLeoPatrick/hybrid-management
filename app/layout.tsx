@@ -13,6 +13,7 @@ import './readability.css';
 import './member-summary.css';
 import './motion.css';
 import './compact-sidebar.css';
+import './gym-check-in.css';
 import { WorkspaceExperience } from '@/components/workspace-experience';
 export const metadata: Metadata = { title:'Hybrid • Academy & Gym',description:'Hybrid Combative Academy & Gym membership management' };
 export const viewport:Viewport={width:'device-width',initialScale:1,viewportFit:'cover'};

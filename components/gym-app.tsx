@@ -9,6 +9,7 @@ import { useWorkspace } from '@/hooks/use-workspace';
 import { current, currentMemberships, daysLeft, membershipTiming, money, status, today } from '@/lib/utils';
 import { supabase } from '@/lib/supabase';
 import { persistDatabase } from '@/services/database';
+import { loadTodayAttendance } from '@/services/gym-check-in';
 import { ImportDialog, exportMembers } from './import-export';
 import { RecordForm, Profile } from './record-form';
 import { Management } from './management';
@@ -38,6 +39,25 @@ export default function GymApp(){
  const [branch,setBranch]=useState('all'),[query,setQuery]=useState(''),[filter,setFilter]=useState('all'),[planFilter,setPlanFilter]=useState('all'),[classFilter,setClassFilter]=useState('all'),[coach,setCoach]=useState(''),[expiry,setExpiry]=useState(''),[modal,setModal]=useState(''),[selected,setSelected]=useState<Member|null>(null),[notice,setNotice]=useState(''),[busy,setBusy]=useState(false),[mobile,setMobile]=useState(false),[sortOrder,setSortOrder]=useState('name');
  const noticeTimer=useRef<ReturnType<typeof setTimeout>|null>(null);
  useEffect(()=>()=>{if(noticeTimer.current)clearTimeout(noticeTimer.current)},[]);
+ useEffect(()=>{
+  if(!user||page!=='Dashboard'||busy||modal)return;
+  let cancelled=false,inFlight=false;
+  const update=async()=>{
+   if(document.visibilityState!=='visible'||inFlight)return;
+   inFlight=true;
+   const date=today();
+   try{
+    const rows=await loadTodayAttendance(date);
+    if(!cancelled)setDb(current=>({...current,attendance:[...current.attendance.filter(item=>item.date!==date),...rows]}));
+   }catch{
+    // Keep saved arrivals on a failed refresh; retry on the next interval.
+   }finally{inFlight=false;}
+  };
+  void update();
+  const timer=setInterval(()=>void update(),15000);
+  window.addEventListener('focus',update);
+  return()=>{cancelled=true;clearInterval(timer);window.removeEventListener('focus',update);};
+ },[user,page,busy,modal,setDb]);
  const notify=(s:string)=>{if(noticeTimer.current)clearTimeout(noticeTimer.current);setNotice(s);noticeTimer.current=setTimeout(()=>setNotice(''),8000)};
  async function save(next:Database){setBusy(true);try{if(!user||!supabase)throw new Error('Please sign in to save changes.');const numbersMayChange=next.members.some(m=>!db.members.some(old=>old.id===m.id&&old.branchId===m.branchId))||next.memberships.some(ms=>!db.memberships.some(old=>old.id===ms.id));await persistDatabase(db,next);setDb(paymentUnlocked?next:{...next,payments:[]});if(numbersMayChange)await refresh(false);notify('Changes saved successfully');return true}catch(e){notify('Could not save: '+String(e));return false}finally{setBusy(false)}}
  const downloadMembers=(format:'csv'|'xlsx')=>{try{exportMembers(members,db,format);notify(format.toUpperCase()+' export prepared. Check your downloads.')}catch{notify('Could not export members. Please try again.')}};
