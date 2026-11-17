@@ -17,5 +17,5 @@ export default function PublicRegistration({ branchCode }: { branchCode: string 
    <label className="honeypot" aria-hidden="true">Company<input name="company" tabIndex={-1} autoComplete="off"/></label><label className="consent"><input name="consent" type="checkbox" required/><span>I agree to Hybrid using these details to manage my registration and contact me about my membership. Submitting records my arrival for reception.</span></label><p className="privacy-note"><ShieldCheck size={15}/> Your details are visible to authorized academy staff.</p>
    {error && <p className="error" role="alert">{error}</p>}<button className="primary full" disabled={busy}>{busy ? 'Saving your details…' : 'Submit application'}<ArrowRight size={17}/></button><p className="hint">For new members. Existing members should check in with reception.</p>
   </form>}{!options && error && <p className="error" role="alert">Registration is unavailable right now. Please speak to reception.</p>}</section>}
-  <p className="join-footer">Hybrid Combative Academy & Gym · Train with purpose.</p></div></main>;
+  <p className="join-footer">Hybrid Combative Academy & Gym</p></div></main>;
 }

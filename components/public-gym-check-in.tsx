@@ -32,7 +32,7 @@ export default function PublicGymCheckIn({token}:{token:string}) {
     <button className="secondary full" onClick={()=>{setResult(null);setError('');}}>Check in another member</button>
    </>:<>
     <div className="eyebrow">{branch||'HYBRID ACADEMY'} · GYM VISIT</div>
-    <h1>Ready to train?</h1>
+    <h1>Gym check-in</h1>
     <p>Enter your full name or member ID to check in.</p>
     {branch&&<form onSubmit={async event=>{
      event.preventDefault();
@@ -53,6 +53,6 @@ export default function PublicGymCheckIn({token}:{token:string}) {
     {!branch&&error&&<><p className="error" role="alert">{error}</p><button className="secondary" onClick={()=>window.location.reload()}>Try again</button></>}
    </>}
   </section>
-  <p className="join-footer">Hybrid Combative Academy &amp; Gym · Train with purpose.</p>
+  <p className="join-footer">Hybrid Combative Academy &amp; Gym</p>
  </div></main>;
 }

@@ -71,9 +71,9 @@
 .app input::placeholder { color: #a8a8a8; }
 .app .text-button { color: var(--gold); min-height: 44px; font-size: 16px; }
 .app .icon-button, .app .mobile-toggle { min-width: 44px; min-height: 44px; color: #d1d1d1; }
-.app :is(button, a, input, select, summary):focus-visible { outline: 3px solid var(--gold); outline-offset: 4px; }
+.app :is(button, a, input, select, summary):focus-visible { outline: 2px solid var(--focus-border); outline-offset: 2px; }
 /* The search wrapper provides one focus border around the icon and input. */
-.app .check-in-panel .check-in-search:focus-within { outline: none; border-color: var(--muted) !important; box-shadow: none; }
+.app .check-in-panel .check-in-search:focus-within { outline: none; border-color: var(--focus-border) !important; box-shadow: none; }
 .app .check-in-panel .check-in-search input:is(:focus, :focus-visible) { outline: none; box-shadow: none; border: 0; }
 .dashboard-section-label { display: flex; justify-content: space-between; gap: 16px; margin-bottom: 14px; color: #a8a8a8; font-size: 16px; }
 .dashboard-section-label > span:first-child { font-size: 16px; font-weight: 600; letter-spacing: 1.6px; }

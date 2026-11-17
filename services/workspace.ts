@@ -1,7 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { loadDatabase } from './database';
 
-export async function loadWorkspace(client: SupabaseClient | null, readDatabase = loadDatabase) {
+export async function loadWorkspace(client: SupabaseClient | null, readDatabase: () => Promise<import('@/types').Database> = loadDatabase) {
   if (!client) throw new Error('Supabase is not configured. Ask your administrator to finish the connection setup.');
   const { data: sessionData, error: sessionError } = await client.auth.getSession();
   if (sessionError) throw sessionError;

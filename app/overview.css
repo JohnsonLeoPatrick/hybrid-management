@@ -25,7 +25,7 @@
 .app .overview-page .check-in-search input { background: transparent; border: 0; min-height: 54px; padding: 12px 0; font-size: 16px; }
 .app .overview-page .check-in-search input::placeholder { color: #b8b8b8; }
 .app .overview-page .check-in-search > svg { color: #b5b5b5; width: 18px; }
-.app .overview-page .check-in-panel .check-in-search:focus-within { border-color: #f0c92c !important; outline: 2px solid #f0c92c; outline-offset: 3px; }
+.app .overview-page .check-in-panel .check-in-search:focus-within { border-color: var(--focus-border) !important; outline: none; box-shadow: none; }
 .app .overview-page .check-in-today { padding: 24px; background: #1b1b1b; border-color: var(--line); }
 .app .overview-page .check-in-today h3 { margin: 0; font-size: 16px; font-weight: 500; color: var(--ink); }
 .app .overview-page .check-in-count { background: #282828; color: #f0c92c; border: 0; border-radius: 6px; min-width: 36px; height: 36px; font-size: 21px; font-weight: 500; }
