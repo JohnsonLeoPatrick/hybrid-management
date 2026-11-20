@@ -15,6 +15,14 @@ Open http://localhost:3000. This is a live-only application: configure Supabase 
 
 Each new tab, full page reload, or reopened browser requires a fresh staff login. Tokens stay in document memory, not browser storage. Navigation within the workspace keeps the current login. Existing tokens from older versions are ignored; Supabase still controls token validity and revocation on the backend.
 
+### Membership expiry
+
+One month adds the number of days in the membership's start month. January 21, 2027 plus 31 days expires February 21; January 31 plus 31 days expires March 3; March 31 plus 31 days expires May 1. February uses 28 days, or 29 in a leap year. Expiry is the first invalid day.
+
+For multiple months, add the total days in consecutive calendar months starting with the start month. January 31, 2027 for two months adds January's 31 days and February's 28 days, expiring March 31.
+
+Apply `supabase/migrations/20261120125503_month_length_membership_expiry.sql` after the existing expiry migrations to keep registration approvals consistent with renewal previews. This changes newly calculated expiries; existing saved membership dates remain unchanged.
+
 ### Money precision and reports
 
 Apply `supabase/migrations/20261104032953_money_precision.sql` after the existing registration and payment migrations. This validates monetary inputs before database conversion can round extra decimal places. Existing payment amounts and access policies are preserved.
