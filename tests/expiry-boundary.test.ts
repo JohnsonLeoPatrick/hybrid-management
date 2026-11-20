@@ -22,7 +22,7 @@ test('correction audits matching current rows and preserves historical, custom, 
   await assert.rejects(pg.exec("update public.memberships set expiry=expiry+1 where id='current'"),/History protected/);
  }finally{await pg.close();}
 });
-test('renewal counts the days in the starting calendar months without clamping',()=>{
+test('renewal counts each month from the previous expiry without clamping',()=>{
  assert.equal(membershipExpiry('2026-10-31',1),'2026-12-01');
  assert.equal(membershipExpiry('2026-10-15',1),'2026-11-15');
  assert.equal(membershipExpiry('2026-10-13',1),'2026-11-13');
@@ -48,7 +48,10 @@ const expiryCases = [
  ['2027-12-31',1,'2028-01-31'],['2028-01-31',1,'2028-03-02'],
  ['2028-02-21',1,'2028-03-21'],['2028-02-29',1,'2028-03-29'],
  ['2000-01-31',1,'2000-03-02'],['2100-01-31',1,'2100-03-03'],
- ['2027-01-31',2,'2027-03-31'],['2027-01-31',3,'2027-05-01'],
+ ['2027-01-31',2,'2027-04-03'],['2027-01-31',3,'2027-05-03'],
+ ['2027-03-31',2,'2027-06-01'],['2027-08-31',2,'2027-11-01'],
+ ['2027-10-31',2,'2028-01-01'],['2028-01-31',2,'2028-04-02'],
+ ['2027-01-31',12,'2028-02-03'],['2027-01-21',2,'2027-03-21'],
  ['2027-12-31',2,'2028-03-02'],['2028-02-29',12,'2029-03-01'],
 ] as const;
 
@@ -70,6 +73,7 @@ test('database expiry agrees with previews and preserves membership history prot
    insert into public.membership_plans(id,"branchId",name,months,price) values('expiry-plan','expiry-test','Expiry plan',1,100);
    insert into public.memberships(id,"memberId","planId",start,expiry) values('saved-expiry','expiry-member','expiry-plan','2027-01-31','2027-03-01');`);
   await pg.exec(await readFile('supabase/migrations/20261120125503_month_length_membership_expiry.sql','utf8'));
+  await pg.exec(await readFile('supabase/migrations/20261120133014_rolling_month_membership_expiry.sql','utf8'));
   for (const [start,months,expected] of expiryCases) {
    const dates=await pg.query<{expiry:string}>('select membership_expiry($1::date,$2::integer)::text as expiry',[start,months]);
    assert.equal(dates.rows[0].expiry,expected);

@@ -2,8 +2,13 @@ import { Database, Membership } from '@/types';
 export const today = () => new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kuala_Lumpur' });
 export const uid = () => crypto.randomUUID();
 export function addMonths(date: string, months: number) { const [y,m,d] = date.split('-').map(Number); const last = new Date(Date.UTC(y,m-1+months+1,0)).getUTCDate(); return new Date(Date.UTC(y,m-1+months,Math.min(d,last))).toISOString().slice(0,10); }
-// Expiry is the first invalid day: add the days in each consecutive calendar month, carrying excess days forward.
-export function membershipExpiry(start: string, months: number) { const [year,month,day] = start.split('-').map(Number); return new Date(Date.UTC(year,month-1+months,day)).toISOString().slice(0,10); }
+// Expiry is the first invalid day: each month adds the days in the month of the previous expiry.
+export function membershipExpiry(start: string, months: number) {
+ const [year,month,day] = start.split('-').map(Number);
+ const expiry = new Date(Date.UTC(year,month-1,day));
+ for(let index=0;index<months;index++)expiry.setUTCMonth(expiry.getUTCMonth()+1);
+ return expiry.toISOString().slice(0,10);
+}
 export function daysLeft(expiry: string, now = today()) { return Math.round((Date.parse(expiry)-Date.parse(now))/86400000); }
 export function status(m?: Membership, now = today()) { if (!m) return 'EXPIRED'; if(m.state !== 'NORMAL') return m.state; if(daysLeft(m.start,now)>0)return 'UPCOMING'; const days = daysLeft(m.expiry,now); return days <= 0 ? 'EXPIRED' : days <= 30 ? 'EXPIRING SOON' : 'ACTIVE'; }
 export function membershipTiming(m?: Membership, now = today()) {
