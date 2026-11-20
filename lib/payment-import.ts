@@ -1,5 +1,6 @@
 import type { Database, Payment } from '@/types';
 import { displayMemberId } from './member-numbers';
+import {validateTransactionDate} from './transaction-dates';
 
 export const paymentImportFields = [
  ['memberId','Member ID'],['membershipId','Membership ID'],['amount','Amount'],['date','Payment date'],
@@ -34,6 +35,7 @@ export function validatePaymentImport(rows:PaymentImportRow[],mapping:Partial<Re
   if(!memberships.some(m=>m.id===membershipId))errors.push(membershipId?'Membership does not belong to this member':'Membership ID required when a member has multiple memberships');
   if(!/^\d+(\.\d{1,2})?$/.test(rawAmount)||!Number.isFinite(amount)||amount<=0||amount>9999999999.99)errors.push('Amount must be positive, with at most 2 decimals');
   if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||!Number.isFinite(Date.parse(date))||new Date(date).toISOString().slice(0,10)!==date)errors.push('Use a valid YYYY-MM-DD date');
+  else try{validateTransactionDate(date,'Payment date');}catch(cause){errors.push(cause instanceof Error?cause.message:'Payment date cannot be before today');}
   if(!paymentMethods.includes(method))errors.push('Choose a supported payment method');
   if(!paymentStatuses.includes(status))errors.push('Choose a supported payment status');
   const fingerprint=paymentFingerprint(payment);

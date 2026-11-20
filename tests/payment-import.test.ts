@@ -4,6 +4,7 @@ import {emptyDatabase} from '../lib/workspace';
 import {validatePaymentImport, type PaymentImportField} from '../lib/payment-import';
 import * as XLSX from 'xlsx';
 import {paymentEntryMethods} from '../lib/payment-methods';
+import {today} from '../lib/utils';
 
 function fixture(){
  const db=emptyDatabase();
@@ -12,7 +13,7 @@ function fixture(){
  return db;
 }
 const mapping:Partial<Record<PaymentImportField,string>>={memberId:'Member',membershipId:'Membership',amount:'Amount',date:'Date',method:'Method',status:'Status',reference:'Reference',id:'ID'};
-const row={Member:'HYB-DD-00001',Amount:'170.50',Date:'2026-10-24',Method:'cash',Reference:'TRANSFER-001'};
+const row={Member:'HYB-DD-00001',Amount:'170.50',Date:today(),Method:'cash',Reference:'TRANSFER-001'};
 
 test('new payment options are Cash and QR, while QR and historical ledger imports remain valid',()=>{
  assert.deepEqual(paymentEntryMethods,['Cash','QR']);
@@ -42,6 +43,11 @@ test('payment imports require an explicit membership when member history is ambi
  assert.deepEqual(validatePaymentImport([{...row,Membership:'renewed'}],mapping,db)[0].errors,[]);
  assert.match(validatePaymentImport([{...row,Membership:'another-member'}],mapping,db)[0].errors.join(),/does not belong/);
 });
+
+test('payment import preview rejects a backdated payment before saving',()=>{
+ const date=new Date(Date.parse(today())-86400000).toISOString().slice(0,10);
+ assert.match(validatePaymentImport([{...row,Date:date}],mapping,fixture())[0].errors.join(),/before today/);
+});
 test('payment import rejects invalid dates, nonpositive amounts, excess decimals, methods, and branches',()=>{
  const changes:Record<string,string>[]=[{Date:'2026-02-30'},{Date:'10/24/2026'},{Amount:'0'},{Amount:'-1'},{Amount:'NaN'},{Amount:'1.001'},{Method:'Bitcoin'},{Status:'Unknown'},{Member:'Missing'}];
  for(const change of changes){
@@ -68,6 +74,6 @@ test('CSV and Excel files preserve IDs, decimal amounts, and payment dates for v
   const preview=validatePaymentImport(rows,mapping,fixture());
   assert.deepEqual(preview[0].errors,[],bookType);
   assert.equal(preview[0].payment.amount,170.5);
-  assert.equal(preview[0].payment.date,'2026-10-24');
+  assert.equal(preview[0].payment.date,row.Date);
  }
 });
