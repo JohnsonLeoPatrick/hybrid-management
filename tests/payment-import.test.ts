@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {emptyDatabase} from '../lib/workspace';
 import {validatePaymentImport, type PaymentImportField} from '../lib/payment-import';
 import * as XLSX from 'xlsx';
+import {paymentEntryMethods} from '../lib/payment-methods';
 
 function fixture(){
  const db=emptyDatabase();
@@ -12,6 +13,14 @@ function fixture(){
 }
 const mapping:Partial<Record<PaymentImportField,string>>={memberId:'Member',membershipId:'Membership',amount:'Amount',date:'Date',method:'Method',status:'Status',reference:'Reference',id:'ID'};
 const row={Member:'HYB-DD-00001',Amount:'170.50',Date:'2026-10-24',Method:'cash',Reference:'TRANSFER-001'};
+
+test('new payment options are Cash and QR, while QR and historical ledger imports remain valid',()=>{
+ assert.deepEqual(paymentEntryMethods,['Cash','QR']);
+ for(const [input,expected] of [['qr','QR'],['cash','Cash'],['Online Transfer','Online Transfer']]){
+  const result=validatePaymentImport([{...row,Method:input}],mapping,fixture())[0];
+  assert.deepEqual(result.errors,[]);assert.equal(result.payment.method,expected);
+ }
+});
 test('short member numbers resolve within the branch without attaching payments to a recycled former owner',()=>{
  const db=fixture();db.members[0].membershipNumber=null;
  db.members.push({...db.members[0],id:'new-owner',membershipNumber:1});

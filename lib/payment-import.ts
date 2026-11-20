@@ -5,7 +5,7 @@ export const paymentImportFields = [
  ['memberId','Member ID'],['membershipId','Membership ID'],['amount','Amount'],['date','Payment date'],
  ['method','Payment method'],['status','Payment status'],['reference','Reference'],['notes','Notes'],['id','Payment ID (optional)'],
 ] as const;
-export const paymentMethods=['Cash','Online Transfer','Credit/Debit Card','E-Wallet','Other'];
+export const paymentMethods=['Cash','QR','Online Transfer','Credit/Debit Card','E-Wallet','Other'];
 export const paymentStatuses=['Paid','Pending','Partial','Overdue'];
 export type PaymentImportField=typeof paymentImportFields[number][0];
 export type PaymentImportRow=Record<string,string>;
