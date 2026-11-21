@@ -1,3 +1,5 @@
+export const CHECK_IN_ORIGIN = 'https://checkin.hybridcombativegym.com';
+
 export const gymQrTokenPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export function gymCheckInLink(origin: string, token: string) {

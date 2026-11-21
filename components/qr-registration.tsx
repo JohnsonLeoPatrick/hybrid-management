@@ -6,7 +6,7 @@ import QRCode from 'qrcode';
 import { Download, ExternalLink, RefreshCw, QrCode } from 'lucide-react';
 import type { Database, Member } from '@/types';
 import type { RegistrationRequest } from '@/types/onboarding';
-import { registrationLink } from '@/lib/registration';
+import { REGISTRATION_ORIGIN, registrationLink } from '@/lib/registration';
 import { approveRegistration, declineRegistration, registrationRequests } from '@/services/onboarding';
 import type { MembershipSelection } from '@/lib/memberships';
 import { MembershipChoices } from './membership-choices';
@@ -14,12 +14,11 @@ import { WorkspaceDialog } from './workspace-dialog';
 import { RegistrationDetails } from './registration-details';
 
 export default function QrRegistration({ db, branch, refresh, notify, openMember }: { db: Database; branch: string; refresh: (loading?: boolean) => Promise<void>; notify: (message: string) => void; openMember: (member: Member) => void }) {
- const [origin, setOrigin] = useState('https://hybrid-management.vercel.app');
+ const [origin, setOrigin] = useState(REGISTRATION_ORIGIN);
  const [code, setCode] = useState(''), [requests, setRequests] = useState<RegistrationRequest[]>([]), [error, setError] = useState(''), [loading, setLoading] = useState(true);
  const [selected, setSelected] = useState<RegistrationRequest | null>(null), [choices, setChoices] = useState<MembershipSelection[]>([]), [busy, setBusy] = useState(false), [status, setStatus] = useState('PENDING');
  const qrBranch = db.branches.find(b => b.id === branch) || db.branches.find(b => b.active);
  let link = ''; try { if (qrBranch) link = registrationLink(origin, qrBranch.code); } catch { /* Show URL validation below. */ }
- useEffect(() => { if (!['localhost','127.0.0.1','0.0.0.0'].includes(window.location.hostname)) setOrigin(window.location.origin); }, []);
  useEffect(() => { let active = true; setCode(''); if (link) QRCode.toDataURL(link, { width: 600, margin: 4, errorCorrectionLevel: 'M', color: { dark: '#000000', light: '#ffffff' } }).then(value => { if (active) setCode(value); }).catch(() => setError('Could not generate the QR code.')); return () => { active = false; }; }, [link]);
  const reload = useCallback(async () => { try { const rows = await registrationRequests(branch); setRequests(rows); setError(''); } catch (cause) { setError(cause instanceof Error ? cause.message : 'Could not load registrations.'); } finally { setLoading(false); } }, [branch]);
  useEffect(() => { void reload(); const timer = setInterval(() => void reload(), 30000); return () => clearInterval(timer); }, [reload]);

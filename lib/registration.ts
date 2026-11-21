@@ -1,6 +1,8 @@
 import type { RegistrationDetails } from '@/types/onboarding';
 import hybridForm from './hybrid-google-form.json';
 
+export const REGISTRATION_ORIGIN = 'https://register.hybridcombativegym.com';
+
 export const HEALTH_QUESTIONS = [
  ['heart', 'Have you ever had any heart condition, heart disease, heart attack or a family history of heart-related illnesses?'],
  ['chestPain', 'Do you feel any discomfort or pain when performing physical activities or exercising?'],

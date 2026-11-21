@@ -4,7 +4,7 @@ import {useEffect,useState} from 'react';
 import QRCode from 'qrcode';
 import {Download,ExternalLink,QrCode} from 'lucide-react';
 import type {Database} from '@/types';
-import {gymCheckInLink} from '@/lib/gym-check-in';
+import {CHECK_IN_ORIGIN,gymCheckInLink} from '@/lib/gym-check-in';
 import {getGymCheckInQr} from '@/services/gym-check-in';
 
 export function GymCheckInQr({branches,branch}:{branches:Database['branches'];branch:string}) {
@@ -20,8 +20,7 @@ export function GymCheckInQr({branches,branch}:{branches:Database['branches'];br
   setQr(null);setError('');
   if(!selectedId)return()=>{active=false;};
   getGymCheckInQr(selectedId).then(async token=>{
-   const origin=['localhost','127.0.0.1','0.0.0.0'].includes(window.location.hostname)?'https://hybrid-management.vercel.app':window.location.origin;
-   const link=gymCheckInLink(origin,token);
+   const link=gymCheckInLink(CHECK_IN_ORIGIN,token);
    const image=await QRCode.toDataURL(link,{width:600,margin:4,errorCorrectionLevel:'M',color:{dark:'#000000',light:'#ffffff'}});
    if(active)setQr({branchId:selectedId,image,link});
   }).catch(cause=>{if(active)setError(cause instanceof Error?cause.message:'Could not generate check-in QR.');});
