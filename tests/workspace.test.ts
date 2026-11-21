@@ -4,9 +4,11 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import { emptyDatabase } from '../lib/workspace';
 import { loadWorkspace } from '../services/workspace';
 
-function authClient({ signedIn = true, valid = true } = {}) {
+function authClient({ signedIn = true, valid = true, authenticatedAt = Date.now(), onSignOut = () => {} } = {}) {
+  const token=`header.${btoa(JSON.stringify({session_id:'session-id',amr:[{method:'password',timestamp:authenticatedAt/1000}]}))}.signature`;
   return { auth: {
-    getSession: async () => ({ data: { session: signedIn ? { user: { id: 'staff-id' } } : null }, error: null }),
+    getSession: async () => ({ data: { session: signedIn ? { user: { id: 'staff-id' }, access_token: token } : null }, error: null }),
+    signOut: async () => { onSignOut(); return { error: null }; },
     getUser: async () => valid
       ? { data: { user: { id: 'staff-id' } }, error: null }
       : { data: { user: null }, error: new Error('Session expired') },
@@ -48,4 +50,12 @@ test('verified staff receive only fetched live records and their assigned role',
 
 test('database failures block access rather than falling back to local records', async () => {
   await assert.rejects(loadWorkspace(authClient(), async () => { throw new Error('Database offline'); }), /Database offline/);
+});
+
+test('a session older than 24 hours signs out before reading workspace records', async () => {
+  let reads=0,signOuts=0;
+  const result=await loadWorkspace(authClient({authenticatedAt:Date.now()-24*60*60*1000,onSignOut:()=>{signOuts++;}}),async()=>{reads++;return emptyDatabase();});
+  assert.equal(result,null);
+  assert.equal(reads,0);
+  assert.equal(signOuts,1);
 });

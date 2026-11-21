@@ -7,6 +7,7 @@ import { usePathname } from 'next/navigation';
 import { sectionForPath } from '@/lib/section-routes';
 import { loadDatabase, workspaceTables } from '@/services/database';
 import { loadWorkspace } from '@/services/workspace';
+import { workspaceSession } from '@/lib/auth-session';
 
 export function useWorkspace() {
   const section=sectionForPath(usePathname());
@@ -23,10 +24,14 @@ export function useWorkspace() {
   const [error, setError] = useState('');
   const [paymentUnlocked, setPaymentUnlocked] = useState(false);
   const [staffUnlocked, setStaffUnlocked] = useState(false);
+  const [expiresAt, setExpiresAt] = useState<number | null>(null);
+  const identity = useRef<{ userId: string; sessionId: string } | null>(null);
   const active = useRef(false);
   const sequence = useRef(0);
 
   const clear = useCallback(() => {
+    identity.current=null;
+    setExpiresAt(null);
     loaded.current=new Set();
     setLoadedKeys(new Set());
     setSectionError('');
@@ -59,6 +64,8 @@ export function useWorkspace() {
         setSectionError('');
         setUser(workspace.userId);
         setRole(workspace.role);
+        identity.current={userId:workspace.userId,sessionId:workspace.session.id};
+        setExpiresAt(workspace.session.expiresAt);
       } else clear();
     } catch (cause) {
       if (!active.current || request !== sequence.current) return;
@@ -72,23 +79,44 @@ export function useWorkspace() {
   useEffect(() => {
     active.current = true;
     if (!supabase) { setReady(true); return () => { active.current = false; }; }
-    const { data } = supabase.auth.onAuthStateChange(event => {
+    const { data } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_OUT') {
         ++sequence.current;
         clear();
         setError('');
         setReady(true);
       } else if (['SIGNED_IN', 'TOKEN_REFRESHED', 'USER_UPDATED'].includes(event)) {
+        const incoming=session&&workspaceSession(session.access_token);
+        if (incoming && incoming.id===identity.current?.sessionId) return;
+        const sameUser=!!session&&session.user.id===identity.current?.userId;
+        if (!sameUser) { ++sequence.current; clear(); }
+        if (incoming && session) identity.current={userId:session.user.id,sessionId:incoming.id};
         // Leave the SDK's auth callback before calling its async methods.
-        setTimeout(() => { if (active.current) void refresh(event === 'SIGNED_IN'); }, 0);
+        setTimeout(() => { if (active.current) void refresh(!sameUser); }, 0);
       }
     });
-    // A restored back/forward-cache document must not resurrect an old in-memory login.
-    const onRestore = (event: PageTransitionEvent) => { if (event.persisted) window.location.reload(); };
-    window.addEventListener('pageshow', onRestore);
+    // Revalidate restored pages without replacing the workspace with a loading screen.
+    const onRestore=(event:PageTransitionEvent)=>{if(event.persisted)void refresh(false);};
+    window.addEventListener('pageshow',onRestore);
     void refresh();
-    return () => { active.current = false; ++sequence.current; data.subscription.unsubscribe(); window.removeEventListener('pageshow', onRestore); };
+    return () => { active.current = false; ++sequence.current; data.subscription.unsubscribe(); window.removeEventListener('pageshow',onRestore); };
   }, [clear, refresh]);
+
+  useEffect(() => {
+    if (!expiresAt || !supabase) return;
+    const expire = () => {
+      if (Date.now()<expiresAt) return;
+      ++sequence.current;
+      clear();
+      setReady(true);
+      void supabase!.auth.signOut({scope:'local'});
+    };
+    const timer=setTimeout(expire,Math.max(0,expiresAt-Date.now()));
+    window.addEventListener('focus',expire);
+    window.addEventListener('pageshow',expire);
+    document.addEventListener('visibilitychange',expire);
+    return()=>{clearTimeout(timer);window.removeEventListener('focus',expire);window.removeEventListener('pageshow',expire);document.removeEventListener('visibilitychange',expire);};
+  }, [expiresAt,clear]);
 
   const ensureTables = useCallback(async (required:Set<keyof Database>):Promise<void> => {
     if(pending.current){await pending.current;return ensureTables(required);}

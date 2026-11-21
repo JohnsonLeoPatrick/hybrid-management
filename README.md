@@ -69,7 +69,7 @@ Run `node scripts/check-supabase.mjs` to check the configured project's authenti
 - CSV/XLSX export of filtered member records, and reports by date/month, branch and plan.
 - Staff role administration and Supabase RLS. All authorized staff can access academy-wide operational member records; branch selection is a working filter, not an isolation boundary.
 
-Saved login sessions may be remembered by Supabase in the same browser. Use **Sign out** at the bottom of the sidebar on a shared device. Authentication is still required, and revoked/invalid sessions never fall back to sample records.
+Staff login persists across reloads and tabs on the same site for 24 hours after the original sign-in. Token refresh does not extend this deadline. Returning to a tab keeps the workspace visible, and a restored back/forward page revalidates access in the background. The app signs out at the deadline, including when a sleeping tab becomes visible again. Use **Sign out** at the bottom of the sidebar on a shared device. Authentication is still required, and revoked/invalid sessions never fall back to sample records.
 
 ## Data and permissions
 
