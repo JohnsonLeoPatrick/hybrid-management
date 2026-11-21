@@ -1,6 +1,18 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { loadDatabase } from './database';
 
+export async function signInWithUsername(client: SupabaseClient, username: string, password: string) {
+  const response = await fetch('/api/auth/login', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username, password }), cache: 'no-store',
+  });
+  const data = await response.json();
+  if (!response.ok) throw new Error(typeof data.error === 'string' ? data.error : 'Sign-in failed. Please try again.');
+  if (typeof data.access_token !== 'string' || typeof data.refresh_token !== 'string') throw new Error('Sign-in failed. Please try again.');
+  const { error } = await client.auth.setSession({ access_token: data.access_token, refresh_token: data.refresh_token });
+  if (error) throw error;
+}
+
 export async function loadWorkspace(client: SupabaseClient | null, readDatabase: () => Promise<import('@/types').Database> = loadDatabase) {
   if (!client) throw new Error('Supabase is not configured. Ask your administrator to finish the connection setup.');
   const { data: sessionData, error: sessionError } = await client.auth.getSession();
