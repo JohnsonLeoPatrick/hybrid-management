@@ -26,6 +26,8 @@ test('database rejects missing answers and privately retains the complete applic
   const migration = (await readdir('supabase/migrations')).find(name=>name.endsWith('_hybrid_google_form_signup.sql'))!;
   for (const file of ['supabase/schema.sql','supabase/002_academy_pricing.sql','supabase/003_qr_registration.sql','supabase/004_personal_details_registration.sql','supabase/005_multiple_membership_registration.sql',`supabase/migrations/${migration}`]) await pg.exec(await readFile(file,'utf8'));
   const valid = {...details,formAnswers:{...details.formAnswers!,responses:Object.fromEntries(source.fields.filter(field=>field.required && field.options.length).map(field=>[field.id,field.options[0]]))}};
+  valid.formAnswers.responses['1407106604.name']='Guardian Example';
+  valid.formAnswers.responses['1407106604.phone']='0123456789';
   await pg.exec('set role anon');
   const options = await pg.query<{value:{hybridFormVersion:number}}>("select public.registration_options('dd') as value");
   assert.equal(options.rows[0].value.hybridFormVersion,1);
