@@ -5,10 +5,11 @@ import {toCents} from '@/lib/money';
 import {today,uid,money} from '@/lib/utils';
 import {WorkspaceDialog} from './workspace-dialog';
 import type {PaymentItem,Payment} from '@/types';
+import {ShoppingBag,ChevronRight} from 'lucide-react';
 
-export function RetailPayment({branch,refresh}:{branch:string;refresh:()=>Promise<void>}){
+export function RetailPayment({branch,refresh,shortcut=false}:{branch:string;refresh:()=>Promise<void>;shortcut?:boolean}){
  const [open,setOpen]=useState(false);
- return <><button className="primary" onClick={()=>setOpen(true)}>Walk-in / product sale</button>{open&&<SaleForm branch={branch} refresh={refresh} close={()=>setOpen(false)}/>}</>;
+ return <><button className={shortcut?undefined:'primary'} onClick={()=>setOpen(true)}>{shortcut?<><span className="action-icon"><ShoppingBag size={18} strokeWidth={1.5}/></span><span><b>Walk-in / product sale</b></span><ChevronRight size={16}/></>:'Walk-in / product sale'}</button>{open&&<SaleForm branch={branch} refresh={refresh} close={()=>setOpen(false)}/>}</>;
 }
 function SaleForm({branch,refresh,close}:{branch:string;refresh:()=>Promise<void>;close:()=>void}){
  const [id]=useState(uid),[busy,setBusy]=useState(false),[error,setError]=useState('');

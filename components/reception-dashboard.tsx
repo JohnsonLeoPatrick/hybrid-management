@@ -37,7 +37,7 @@ export function ReceptionDashboard({db,members,open,navigate,paymentUnlocked,sav
   </motion.button>)}</div>
   <div className="dashboard-section-label"><span>Quick actions</span></div>
   <section className="reception-actions" aria-label="Reception shortcuts">
-   <RetailPayment key={branch} branch={branch} refresh={refresh}/>
+   <RetailPayment key={branch} branch={branch} refresh={refresh} shortcut/>
    <motion.button {...cardMotion} onClick={()=>open('member')}><span className="action-icon"><Plus size={18} strokeWidth={1.5}/></span><span><b>Add a member</b></span><ChevronRight size={16}/></motion.button>
    <motion.button {...cardMotion} onClick={()=>navigate('Renewals')}><span className="action-icon"><RefreshCw size={18} strokeWidth={1.5}/></span><span><b>Renew a membership</b></span><ChevronRight size={16}/></motion.button>
    <motion.button {...cardMotion} onClick={()=>open('payment')}><span className="action-icon"><CreditCard size={18} strokeWidth={1.5}/></span><span><b>Record a payment</b></span><ChevronRight size={16}/></motion.button>
