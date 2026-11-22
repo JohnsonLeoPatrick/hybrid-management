@@ -8,13 +8,14 @@ import { Badge } from './gym-app';
 import { MembershipChart } from './membership-chart';
 import { MemberCheckIn } from './member-check-in';
 import { AttendanceHistory } from './attendance-history';
+import { RetailPayment } from './retail-payment';
 
 const cardMotion = {
  whileTap: { scale: .995 },
  transition: { duration: .15 },
 };
 
-export function ReceptionDashboard({db,members,open,navigate,paymentUnlocked,save,busy,branch}:{db:Database;members:Member[];open:(kind:string,m?:Member|null)=>void;navigate:(p:string)=>void;paymentUnlocked:boolean;save:(db:Database)=>Promise<boolean>;busy:boolean;branch:string}){
+export function ReceptionDashboard({db,members,open,navigate,paymentUnlocked,save,busy,branch,refresh}:{db:Database;members:Member[];open:(kind:string,m?:Member|null)=>void;navigate:(p:string)=>void;paymentUnlocked:boolean;save:(db:Database)=>Promise<boolean>;busy:boolean;branch:string;refresh:()=>Promise<void>}){
  const expiring=members.flatMap(m=>currentMemberships(db,m.id).map(ms=>({m,ms}))).filter(({ms})=>status(ms)==='EXPIRING SOON').sort((a,b)=>a.ms.expiry.localeCompare(b.ms.expiry));
  const activeCount=members.filter(m=>['ACTIVE','EXPIRING SOON'].includes(memberStatus(db,m.id))).length;
  const activeShare=members.length?Math.round(activeCount/members.length*100):0;
@@ -36,6 +37,7 @@ export function ReceptionDashboard({db,members,open,navigate,paymentUnlocked,sav
   </motion.button>)}</div>
   <div className="dashboard-section-label"><span>Quick actions</span></div>
   <section className="reception-actions" aria-label="Reception shortcuts">
+   <RetailPayment key={branch} branch={branch} refresh={refresh}/>
    <motion.button {...cardMotion} onClick={()=>open('member')}><span className="action-icon"><Plus size={18} strokeWidth={1.5}/></span><span><b>Add a member</b></span><ChevronRight size={16}/></motion.button>
    <motion.button {...cardMotion} onClick={()=>navigate('Renewals')}><span className="action-icon"><RefreshCw size={18} strokeWidth={1.5}/></span><span><b>Renew a membership</b></span><ChevronRight size={16}/></motion.button>
    <motion.button {...cardMotion} onClick={()=>open('payment')}><span className="action-icon"><CreditCard size={18} strokeWidth={1.5}/></span><span><b>Record a payment</b></span><ChevronRight size={16}/></motion.button>

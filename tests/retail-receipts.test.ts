@@ -38,6 +38,7 @@ test('retail receipts are sequential, branch scoped, immutable, and voided with 
    insert into public.members(id,name,"branchId") values('dd-member','DD member','dd'),('bd-member','BD member','bd');
    insert into public.memberships(id,"memberId","planId",start,expiry) values('dd-membership','dd-member','hybrid-boxing','2026-01-01','2026-02-01');`);
   await pg.exec(await readFile('supabase/migrations/20261118090000_workspace_queries_and_conflicts.sql','utf8'));
+  await pg.exec(await readFile('supabase/migrations/20261024091149_payment_section_scope.sql','utf8'));
   await pg.exec(await readFile('supabase/migrations/20261122021643_branch_password_access.sql','utf8'));
   await pg.exec(`insert into private.branch_credentials select id,extensions.crypt('branch-test-password',extensions.gen_salt('bf',4)) from public.branches;
    set role authenticated;`);
@@ -70,5 +71,9 @@ test('retail receipts are sequential, branch scoped, immutable, and voided with 
   await pg.query('select public.unlock_branch($1,$2)',['bd','branch-test-password']);
   assert.equal((await sale('bd-sale','bd')).rows[0].receiptNumber,'BD-000001');
   assert.deepEqual((await pg.query('select id from payments')).rows,[{id:'bd-sale'}]);
+  await pg.query('select public.lock_payments()');
+  await pg.query(`insert into payments(id,"branchId",items,amount,date,method,status) values('overview-sale','bd',$1::jsonb,10,current_date,'Cash','Paid')`,[JSON.stringify([{description:'Walk-in',quantity:1,unitPrice:10}])]);
+  await pg.query('select public.unlock_payments($1)',['payments-test']);
+  assert.equal((await pg.query(`select "receiptNumber" from payments where id='overview-sale'`)).rows.length,1,'overview collection works while ledger is locked');
  }finally{await pg.close();}
 });

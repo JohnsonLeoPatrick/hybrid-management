@@ -1,6 +1,6 @@
 # Payments and e-receipts
 
-In Payments, unlock access and choose **Walk-in / product sale** to collect payment without creating a member. Enter up to 20 items with whole quantities and unit prices. Customer name and email are optional. Membership payments retain their existing workflow.
+On Overview, choose **Walk-in / product sale** under Quick actions to collect payment without creating a member. This collection does not require unlocking the payment ledger. The sale is recorded in Payments, where viewing it still requires the payment password. The same sale button remains available in Payments. Enter up to 20 items with whole quantities and unit prices. Customer name and email are optional. Membership payments retain their existing workflow.
 
 New payments receive sequential receipt numbers within their branch. KIP uses `KIP-000001` and BD uses `BD-000001`. Database transactions serialize number allocation; failed transactions do not consume numbers. Voided numbers are retained and never reused. Existing historical receipt identifiers remain compatible.
 
