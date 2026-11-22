@@ -26,6 +26,7 @@ test('public gym check-in works with the real attendance schema, triggers, and s
    insert into public.staff(id,name,email,role) values('00000000-0000-4000-8000-000000000001','Test admin','preview@example.test','SUPER ADMIN');
    insert into public.branches(id,name,code) values('test','Test academy','TT');
    insert into public.members(id,name,"branchId","membershipNumber") values('test-member','Test Member','test',1);`);
+  await pg.exec(await readFile('supabase/migrations/20261122200740_attendance_timestamps.sql','utf8'));
   await pg.exec(await readFile('supabase/migrations/20261117080257_public_gym_check_in.sql','utf8'));
   await pg.exec('set role authenticated;');
   const result=await pg.query<{token:string}>("select public.gym_check_in_qr('test') as token");
@@ -38,6 +39,7 @@ test('public gym check-in works with the real attendance schema, triggers, and s
   await pg.exec('reset role;set role authenticated');
   const attendance=await pg.query('select "memberId","classId" from public.attendance');
   assert.deepEqual(attendance.rows,[{memberId:'test-member',classId:null}]);
+  assert.equal((await pg.query('select '+String.fromCharCode(34)+'checkedInAt'+String.fromCharCode(34)+' is not null as stamped from attendance')).rows[0].stamped,true);
  }finally{await pg.close();}
 });
 
@@ -58,6 +60,7 @@ test('public QR records branch-scoped gym visits without exposing member records
    ('m5','Former Owner','a',null),('m6','Archived','a',4);
    update public.members set deleted=true where id='m6';
    select set_config('test.staff_role','SUPER ADMIN',false);`);
+  await pg.exec(await readFile('supabase/migrations/20261122200740_attendance_timestamps.sql','utf8'));
   await pg.exec(await readFile('supabase/migrations/20261117080257_public_gym_check_in.sql','utf8'));
   const admin=await pg.query<{token:string}>("select public.gym_check_in_qr('a') as token");
   const token=admin.rows[0].token;

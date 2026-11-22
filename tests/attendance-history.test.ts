@@ -21,7 +21,7 @@ test('history queries stored records with branch, dates, member, type, and pagin
  assert.equal(url.searchParams.get('deleted'),'eq.false');
  assert.equal(url.searchParams.get('offset'),'25');
  assert.equal(url.searchParams.get('limit'),'25');
- assert.equal(url.searchParams.get('order'),'date.desc,id.desc');
+ assert.equal(url.searchParams.get('order'),'date.desc,checkedInAt.desc.nullslast,id.desc');
  assert.match(url.searchParams.get('select') || '',/members!inner/);
 });
 

@@ -7,6 +7,6 @@ export interface Membership { id: string; memberId: string; planId: string; star
 export interface PaymentItem { description:string; quantity:number; unitPrice:number }
 export interface Payment { branchId?:string; receiptNumber?:string|null; items?:PaymentItem[]|null; customerName?:string; customerEmail?:string; voidReason?:string|null; voidedAt?:string|null; voidedBy?:string|null; id: string; memberId: string|null; membershipId: string|null; amount: number; date: string; method: string; reference: string; notes: string; status: string }
 export interface Renewal { id: string; memberId: string; previousId: string; membershipId: string; date: string }
-export interface Attendance { id: string; memberId: string; classId: string | null; date: string }
+export interface Attendance { checkedInAt?:string|null; id: string; memberId: string; classId: string | null; date: string }
 export interface Staff { id: string; name: string; email: string; role: Role; branchId: string }
 export interface Database { branches: Branch[]; plans: Plan[]; classes: GymClass[]; members: Member[]; memberships: Membership[]; payments: Payment[]; renewals: Renewal[]; attendance: Attendance[]; staff: Staff[] }
