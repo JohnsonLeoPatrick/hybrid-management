@@ -15,8 +15,8 @@ function fixture(){
 const mapping:Partial<Record<PaymentImportField,string>>={memberId:'Member',membershipId:'Membership',amount:'Amount',date:'Date',method:'Method',status:'Status',reference:'Reference',id:'ID'};
 const row={Member:'HYB-DD-00001',Amount:'170.50',Date:today(),Method:'cash',Reference:'TRANSFER-001'};
 
-test('new payment options are Cash and QR, while QR and historical ledger imports remain valid',()=>{
- assert.deepEqual(paymentEntryMethods,['Cash','QR']);
+test('cash, QR, bank and card entry methods preserve historical ledger imports',()=>{
+ assert.deepEqual(paymentEntryMethods,['Cash','QR','Online Transfer','Credit/Debit Card']);
  for(const [input,expected] of [['qr','QR'],['cash','Cash'],['Online Transfer','Online Transfer']]){
   const result=validatePaymentImport([{...row,Method:input}],mapping,fixture())[0];
   assert.deepEqual(result.errors,[]);assert.equal(result.payment.method,expected);

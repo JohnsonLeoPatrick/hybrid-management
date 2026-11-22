@@ -11,6 +11,7 @@ export function PaymentExportButtons({db,payments,branch,notify}:{db:Database;pa
   if(busy)return;setBusy(format);
   try{
    if(!supabase)throw new Error('Database unavailable.');
+   const role=await supabase.rpc('staff_role');if(role.error||!['ADMIN','SUPER ADMIN'].includes(role.data))throw new Error('Only managers can export payment ledgers.');
    const access=await supabase.rpc('payment_access');
    if(access.error||access.data!==true)throw new Error('Unlock Payments again before downloading.');
    const {buildPaymentExport,createPaymentWorkbook}=await import('@/lib/payment-export');

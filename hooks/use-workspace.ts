@@ -180,7 +180,7 @@ export function useWorkspace() {
         setDb(current => current.staff.some(person=>person.id!==user) ? {...current,staff:current.staff.filter(person=>person.id===user)} : current);
       }
     };
-    const timer = setInterval(() => void check(), 10000);
+    const timer = setInterval(() => void check(), 60000);
     window.addEventListener('focus', check);
     return () => { cancelled = true; clearInterval(timer); window.removeEventListener('focus', check); };
   }, [user,currentBranch,refresh]);

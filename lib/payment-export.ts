@@ -8,9 +8,9 @@ export function buildPaymentExport(db:Database,payments:Payment[],branch:string,
   const member=db.members.find(m=>m.id===p.memberId);
   const membership=db.memberships.find(m=>m.id===p.membershipId);
   if(!Number.isFinite(p.amount)||p.amount<0)throw new Error('A payment has an invalid amount. Check the ledger before exporting.');
-  return {'Member':member?.name||p.customerName||'Walk-in customer','Member ID':member ? displayMemberId(member) : p.memberId,'Membership':p.items?.map(item=>`${item.description} x ${item.quantity}`).join(', ')||db.plans.find(plan=>plan.id===membership?.planId)?.name||'Archived plan','Amount (RM)':p.amount,'Payment date':p.date,'Method':p.method,'Reference':p.reference,'Status':p.status,'Notes':[p.notes,p.receiptNumber,p.voidReason?`VOID: ${p.voidReason}; ${p.voidedAt}; ${p.voidedBy}`:''].filter(Boolean).join(' · '),'Payment ID':p.id,'Membership ID':p.membershipId};
+  return {'Member':member?.name||p.customerName||'Walk-in customer','Member ID':member ? displayMemberId(member) : p.memberId,'Membership':p.items?.map(item=>`${item.description} x ${item.quantity}`).join(', ')||db.plans.find(plan=>plan.id===membership?.planId)?.name||'Archived plan','Amount (RM)':p.amount,'Payment date':p.date,'Method':p.method,'Reference':p.reference,'Status':p.status,'Notes':[p.notes,p.receiptNumber,p.voidReason?`${p.status.toUpperCase()}: ${p.voidReason}; ${p.voidedAt}; ${p.voidedBy}`:''].filter(Boolean).join(' · '),'Payment ID':p.id,'Membership ID':p.membershipId};
  });
- return {branch,generated,rows,total:sumMoney(rows.filter(row=>row.Status!=='Void').map(row=>row['Amount (RM)']))};
+ return {branch,generated,rows,total:sumMoney(rows.filter(row=>!['Void','Refunded'].includes(row.Status)).map(row=>row['Amount (RM)']))};
 }
 export type PaymentExport=ReturnType<typeof buildPaymentExport>;
 export function createPaymentWorkbook(data:PaymentExport){

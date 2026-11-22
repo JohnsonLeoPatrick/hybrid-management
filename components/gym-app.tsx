@@ -62,7 +62,7 @@ export default function GymApp(){
    }finally{inFlight=false;}
   };
   void update();
-  const timer=setInterval(()=>void update(),15000);
+  const timer=setInterval(()=>void update(),30000);
   window.addEventListener('focus',update);
   return()=>{cancelled=true;clearInterval(timer);window.removeEventListener('focus',update);};
  },[user,page,busy,modal,currentBranch,setDb]);

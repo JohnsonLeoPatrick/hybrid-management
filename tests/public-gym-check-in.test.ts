@@ -39,7 +39,7 @@ test('public gym check-in works with the real attendance schema, triggers, and s
   await pg.exec('reset role;set role authenticated');
   const attendance=await pg.query('select "memberId","classId" from public.attendance');
   assert.deepEqual(attendance.rows,[{memberId:'test-member',classId:null}]);
-  assert.equal((await pg.query('select '+String.fromCharCode(34)+'checkedInAt'+String.fromCharCode(34)+' is not null as stamped from attendance')).rows[0].stamped,true);
+  assert.equal((await pg.query<{stamped:boolean}>('select '+String.fromCharCode(34)+'checkedInAt'+String.fromCharCode(34)+' is not null as stamped from attendance')).rows[0].stamped,true);
  }finally{await pg.close();}
 });
 

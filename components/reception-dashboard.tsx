@@ -19,7 +19,7 @@ export function ReceptionDashboard({db,members,open,navigate,paymentUnlocked,sav
  const expiring=members.flatMap(m=>currentMemberships(db,m.id).map(ms=>({m,ms}))).filter(({ms})=>status(ms)==='EXPIRING SOON').sort((a,b)=>a.ms.expiry.localeCompare(b.ms.expiry));
  const activeCount=members.filter(m=>['ACTIVE','EXPIRING SOON'].includes(memberStatus(db,m.id))).length;
  const activeShare=members.length?Math.round(activeCount/members.length*100):0;
- const unpaid=db.payments.filter(p=>p.status!=='Paid'&&p.status!=='Void'&&members.some(m=>m.id===p.memberId));
+ const unpaid=db.payments.filter(p=>p.status!=='Paid'&&!['Void','Refunded'].includes(p.status)&&members.some(m=>m.id===p.memberId));
  return <MotionConfig reducedMotion="user"><div className="dashboard-layout">
   <MemberCheckIn key={branch} {...{db,members,save,busy,open}}/>
   <AttendanceHistory key={'history-'+branch} branch={branch} members={members} revision={db.attendance.length}/>
@@ -38,6 +38,7 @@ export function ReceptionDashboard({db,members,open,navigate,paymentUnlocked,sav
   <div className="dashboard-section-label"><span>Quick actions</span></div>
   <section className="reception-actions" aria-label="Reception shortcuts">
    <RetailPayment key={branch} branch={branch} refresh={refresh} shortcut/>
+   <motion.button {...cardMotion} onClick={()=>navigate('Payments')}><span className="action-icon"><Clock3 size={18} strokeWidth={1.5}/></span><span><b>Daily reconciliation</b></span><ChevronRight size={16}/></motion.button>
    <motion.button {...cardMotion} onClick={()=>open('member')}><span className="action-icon"><Plus size={18} strokeWidth={1.5}/></span><span><b>Add a member</b></span><ChevronRight size={16}/></motion.button>
    <motion.button {...cardMotion} onClick={()=>navigate('Renewals')}><span className="action-icon"><RefreshCw size={18} strokeWidth={1.5}/></span><span><b>Renew a membership</b></span><ChevronRight size={16}/></motion.button>
    <motion.button {...cardMotion} onClick={()=>open('payment')}><span className="action-icon"><CreditCard size={18} strokeWidth={1.5}/></span><span><b>Record a payment</b></span><ChevronRight size={16}/></motion.button>

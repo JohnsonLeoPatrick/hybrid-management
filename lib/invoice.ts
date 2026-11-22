@@ -40,7 +40,7 @@ export function buildInvoice(db: Database, payment: Payment) {
   items:payment.items||null, branch: branch?.name || '', description: payment.items?.map(item=>`${item.description} x ${item.quantity}`).join(', ')||plan?.name || 'Membership payment',
   period: membership ? `${invoiceDate(membership.start)} - ${invoiceDate(membership.expiry)}` : '',
   amount: payment.amount, status: payment.status || 'Not specified', method: payment.method || 'Not specified',
-  reference: payment.reference || '', notes: [payment.notes,payment.voidReason?`VOID: ${payment.voidReason}; ${payment.voidedAt}`:''].filter(Boolean).join(' · '),
+  reference: payment.reference || '', notes: [payment.notes,payment.voidReason?`${payment.status.toUpperCase()}: ${payment.voidReason}; ${payment.voidedAt}`:''].filter(Boolean).join(' · '),
  };
 }
 
