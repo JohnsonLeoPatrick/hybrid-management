@@ -24,6 +24,7 @@ export function useWorkspace() {
   const [error, setError] = useState('');
   const [paymentUnlocked, setPaymentUnlocked] = useState(false);
   const [staffUnlocked, setStaffUnlocked] = useState(false);
+  const [currentBranch,setCurrentBranch]=useState<string|null>(null);
   const [expiresAt, setExpiresAt] = useState<number | null>(null);
   const identity = useRef<{ userId: string; sessionId: string } | null>(null);
   const active = useRef(false);
@@ -41,6 +42,7 @@ export function useWorkspace() {
     setDb(emptyDatabase());
     setPaymentUnlocked(false);
     setStaffUnlocked(false);
+    setCurrentBranch(null);
   }, []);
 
   const refresh = useCallback(async (showLoading = true) => {
@@ -49,16 +51,25 @@ export function useWorkspace() {
     setError('');
     try {
       const requestedSection=sectionRef.current;
-      const workspace = await loadWorkspace(supabase,()=>loadDatabase(requestedSection));
+      let beforeBranch:string|null=null;
+      const workspace = await loadWorkspace(supabase,async()=>{
+        const access=await supabase!.rpc('current_branch');
+        if(access.error)throw new Error('Branch access is unavailable. Please try again later.');
+        beforeBranch=typeof access.data==='string'?access.data:null;
+        return loadDatabase(requestedSection);
+      });
       if (!active.current || request !== sequence.current) return;
       if (workspace) {
-        const [access,staffAccess] = await Promise.all([supabase!.rpc('payment_access'),supabase!.rpc('staff_access')]);
+        const [access,staffAccess,branchAccess] = await Promise.all([supabase!.rpc('payment_access'),supabase!.rpc('staff_access'),supabase!.rpc('current_branch')]);
         if (!active.current || request !== sequence.current) return;
+        if(branchAccess.error)throw new Error('Branch access is unavailable. Please try again later.');
+        if(beforeBranch!==branchAccess.data)throw new Error('The branch changed while loading. Please try again.');
+        setCurrentBranch(typeof branchAccess.data==='string'?branchAccess.data:null);
         const unlocked = !access.error && access.data === true;
         const staffAllowed = !staffAccess.error && staffAccess.data === true;
         setPaymentUnlocked(unlocked);
         setStaffUnlocked(staffAllowed);
-        setDb({...workspace.db,payments:unlocked?workspace.db.payments:[],staff:staffAllowed?workspace.db.staff:workspace.db.staff.filter(person=>person.id===workspace.userId)});
+        setDb({...branchAccess.data?workspace.db:{...emptyDatabase(),branches:workspace.db.branches,staff:workspace.db.staff},payments:unlocked&&branchAccess.data?workspace.db.payments:[],staff:staffAllowed?workspace.db.staff:workspace.db.staff.filter(person=>person.id===workspace.userId)});
         loaded.current=workspaceTables(requestedSection);
         setLoadedKeys(new Set(loaded.current));
         setSectionError('');
@@ -152,8 +163,14 @@ export function useWorkspace() {
     if (!user || !supabase) return;
     let cancelled = false;
     const check = async () => {
-      const [access,staffAccess] = await Promise.all([supabase!.rpc('payment_access'),supabase!.rpc('staff_access')]);
+      const [access,staffAccess,branchAccess] = await Promise.all([supabase!.rpc('payment_access'),supabase!.rpc('staff_access'),supabase!.rpc('current_branch')]);
       if (cancelled) return;
+      const branch=branchAccess.error?null:branchAccess.data;
+      if(branch!==currentBranch){
+        setCurrentBranch(null);
+        setDb(current=>({...emptyDatabase(),branches:current.branches,staff:current.staff.filter(person=>person.id===user)}));
+        void refresh(false);
+      }
       if (access.error || access.data !== true) {
         setPaymentUnlocked(false);
         setDb(current => current.payments.length ? {...current, payments: []} : current);
@@ -166,7 +183,7 @@ export function useWorkspace() {
     const timer = setInterval(() => void check(), 10000);
     window.addEventListener('focus', check);
     return () => { cancelled = true; clearInterval(timer); window.removeEventListener('focus', check); };
-  }, [user]);
+  }, [user,currentBranch,refresh]);
 
-  return { db, setDb, user, role, ready, error, refresh, paymentUnlocked, staffUnlocked, ensureDetails, sectionError, pageReady:[...workspaceTables(section)].every(key=>loadedKeys.has(key)) };
+  return { db, setDb, user, role, ready, error, refresh, paymentUnlocked, staffUnlocked, currentBranch, ensureDetails, sectionError, pageReady:[...workspaceTables(section)].every(key=>loadedKeys.has(key)) };
 }
