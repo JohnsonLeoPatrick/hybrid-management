@@ -12,7 +12,7 @@ export function createInvoicePdf(invoice: InvoiceData, fonts: InvoiceFonts) {
  doc.addFileToVFS('GoogleSans-Bold.ttf', fonts.bold);
  doc.addFont('GoogleSans-Bold.ttf', 'GoogleSans', 'bold');
  doc.setFont('GoogleSans', 'normal');
- doc.setProperties({ title: `Invoice ${invoice.number}`, subject: 'Membership payment invoice', author: invoice.company.name, creator: invoice.company.name });
+ doc.setProperties({ title: `E-receipt ${invoice.number}`, subject: 'Payment e-receipt', author: invoice.company.name, creator: invoice.company.name });
  const text = (value: string, x: number, y: number, size = 10, bold = false, color = ink, width?: number) => {
   doc.setFont('GoogleSans', bold ? 'bold' : 'normal');
   doc.setFontSize(size); doc.setTextColor(color);
@@ -22,12 +22,12 @@ export function createInvoicePdf(invoice: InvoiceData, fonts: InvoiceFonts) {
  };
  doc.setFillColor('#f0c92c'); doc.rect(20, 19, 15, 2, 'F');
  text('HYBRID', 20, 34, 21, true);
- text('INVOICE', 148, 32, 24, true);
+ text('E-RECEIPT', 148, 32, 24, true);
  let issuerY = text(invoice.company.name, 20, 43, 10, true, ink, 100);
  for (const address of invoice.company.address) issuerY = text(address, 20, issuerY + 1, 9, false, muted, 100);
  text(`${invoice.company.phone}  /  ${invoice.company.website}`, 20, issuerY + 3, 9, false, muted, 150);
  const numberY = Math.max(72, issuerY + 11);
- text('INVOICE NUMBER', 20, numberY, 8, true, muted);
+ text('RECEIPT NUMBER', 20, numberY, 8, true, muted);
  const numberBottom = text(invoice.number, 20, numberY + 7, 9, false, ink, 170);
  doc.setDrawColor(line); doc.line(20, numberBottom + 4, 190, numberBottom + 4);
  const detailY = numberBottom + 12;
@@ -44,7 +44,7 @@ export function createInvoicePdf(invoice: InvoiceData, fonts: InvoiceFonts) {
  autoTable(doc, {
   startY: Math.max(memberY, metaY) + 6,
   head: [['DESCRIPTION', { content: 'QTY', styles: { halign: 'center' } }, { content: 'AMOUNT', styles: { halign: 'right' } }]],
-  body: [[`${invoice.description}${invoice.period ? `\nMembership period: ${invoice.period}` : ''}`, '1', invoiceMoney(invoice.amount)]],
+  body: invoice.items?invoice.items.map(item=>[item.description,String(item.quantity),invoiceMoney(Math.round(item.unitPrice*100)*item.quantity/100)]):[[`${invoice.description}${invoice.period ? `\nMembership period: ${invoice.period}` : ''}`, '1', invoiceMoney(invoice.amount)]],
   margin: { left: 20, right: 20, top: 22, bottom: 25 }, theme: 'plain',
   styles: { font: 'GoogleSans', fontSize: 10, textColor: ink, cellPadding: 5, overflow: 'linebreak', lineColor: line, lineWidth: { bottom: .2 } },
   headStyles: { fillColor: '#f6f6f6', textColor: muted, fontStyle: 'bold', fontSize: 8 },
@@ -54,7 +54,7 @@ export function createInvoicePdf(invoice: InvoiceData, fonts: InvoiceFonts) {
  const ensureSpace = (height: number) => { if (y + height > 258) { doc.addPage(); y = 25; } };
  ensureSpace(27);
  doc.setFillColor('#f6f6f6'); doc.roundedRect(119, y - 5, 71, 22, 2, 2, 'F');
- text('Invoice total', 124, y + 2, 10, true);
+ text('Receipt total', 124, y + 2, 10, true);
  doc.setFont('GoogleSans', 'bold'); doc.setTextColor(ink); doc.setFontSize(15);
  doc.text(invoiceMoney(invoice.amount), 185, y + 11, { align: 'right' });
  y += 23;

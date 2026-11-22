@@ -4,7 +4,8 @@ export interface Plan { id: string; name: string; months: number; price: number;
 export interface GymClass { id: string; name: string; coach: string; branchId: string; day: string; start: string; end: string; capacity: number }
 export interface Member { id: string; membershipNumber?: number | null; name: string; ic: string; dob: string; gender: string; phone: string; email: string; emergencyName: string; emergencyPhone: string; address: string; registered: string; branchId: string; photo: string; medical: string; notes: string; coach: string; classIds: string[] }
 export interface Membership { id: string; memberId: string; planId: string; start: string; expiry: string; state: 'NORMAL' | 'FROZEN' | 'CANCELLED'; created: string }
-export interface Payment { id: string; memberId: string; membershipId: string; amount: number; date: string; method: string; reference: string; notes: string; status: string }
+export interface PaymentItem { description:string; quantity:number; unitPrice:number }
+export interface Payment { branchId?:string; receiptNumber?:string|null; items?:PaymentItem[]|null; customerName?:string; customerEmail?:string; voidReason?:string|null; voidedAt?:string|null; voidedBy?:string|null; id: string; memberId: string|null; membershipId: string|null; amount: number; date: string; method: string; reference: string; notes: string; status: string }
 export interface Renewal { id: string; memberId: string; previousId: string; membershipId: string; date: string }
 export interface Attendance { id: string; memberId: string; classId: string | null; date: string }
 export interface Staff { id: string; name: string; email: string; role: Role; branchId: string }

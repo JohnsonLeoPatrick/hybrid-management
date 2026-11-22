@@ -28,19 +28,19 @@ export function invoiceMoney(value: number) {
 
 export function buildInvoice(db: Database, payment: Payment) {
  if (!Number.isFinite(payment.amount) || payment.amount < 0) throw new Error('This payment needs a valid amount before an invoice can be generated.');
- const number = invoiceNumber(payment);
+ const number = payment.receiptNumber || invoiceNumber(payment);
  const member = db.members.find(item => item.id === payment.memberId);
  const membership = db.memberships.find(item => item.id === payment.membershipId && item.memberId === payment.memberId);
  const plan = db.plans.find(item => item.id === membership?.planId);
- const branch = db.branches.find(item => item.id === member?.branchId);
+ const branch = db.branches.find(item => item.id === (payment.branchId||member?.branchId));
  return {
   number, company: invoiceCompany, date: payment.date, dateLabel: invoiceDate(payment.date),
-  paymentId: payment.id, memberId: member ? displayMemberId(member) : payment.memberId, memberName: member?.name || 'Archived member',
-  memberAddress: member?.address || '', memberEmail: member?.email || '', memberPhone: member?.phone || '',
-  branch: branch?.name || '', description: plan?.name || 'Membership payment',
+  paymentId: payment.id, memberId: member ? displayMemberId(member) : payment.memberId||'', memberName: member?.name || payment.customerName || 'Walk-in customer',
+  memberAddress: member?.address || '', memberEmail: member?.email || payment.customerEmail || '', memberPhone: member?.phone || '',
+  items:payment.items||null, branch: branch?.name || '', description: payment.items?.map(item=>`${item.description} x ${item.quantity}`).join(', ')||plan?.name || 'Membership payment',
   period: membership ? `${invoiceDate(membership.start)} - ${invoiceDate(membership.expiry)}` : '',
   amount: payment.amount, status: payment.status || 'Not specified', method: payment.method || 'Not specified',
-  reference: payment.reference || '', notes: payment.notes || '',
+  reference: payment.reference || '', notes: [payment.notes,payment.voidReason?`VOID: ${payment.voidReason}; ${payment.voidedAt}`:''].filter(Boolean).join(' · '),
  };
 }
 

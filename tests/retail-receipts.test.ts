@@ -1,0 +1,74 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+import {PGlite} from '@electric-sql/pglite';
+import {pgcrypto} from '@electric-sql/pglite/contrib/pgcrypto';
+import {buildInvoice} from '../lib/invoice';
+import {seed} from '../lib/seed';
+import {reportPayments,collectedTotal} from '../lib/reports';
+import {buildPaymentExport} from '../lib/payment-export';
+
+test('sale receipts regenerate with saved numbers and voids stay out of collected totals',()=>{
+ const db=seed();db.payments=[{id:'sale',memberId:null,membershipId:null,branchId:'dd',receiptNumber:'KIP-000001',items:[{description:'Protein powder',quantity:2,unitPrice:25}],customerName:'Walk-in',customerEmail:'buyer@example.test',amount:50,date:'2026-11-23',method:'Cash',status:'Paid',reference:'',notes:''}];
+ const receipt=buildInvoice(db,db.payments[0]);assert.equal(receipt.number,'KIP-000001');assert.equal(receipt.memberName,'Walk-in');assert.equal(receipt.items?.[0].quantity,2);
+ assert.equal(collectedTotal(reportPayments(db,{branch:'dd',plan:'all',from:'',to:''})),50);
+ assert.equal(reportPayments(db,{branch:'dd',plan:db.plans[0].id,from:'',to:''}).length,0);
+ db.payments[0]={...db.payments[0],status:'Void',voidReason:'Incorrect payment'};
+ assert.equal(collectedTotal(db.payments),0);assert.equal(buildPaymentExport(db,db.payments,'dd','now').total,0);
+ assert.equal(buildInvoice(db,db.payments[0]).number,receipt.number);assert.match(buildInvoice(db,db.payments[0]).notes,/VOID/);
+});
+
+test('retail receipts are sequential, branch scoped, immutable, and voided with admin audit',async()=>{
+ const pg=new PGlite({extensions:{pgcrypto}});
+ const user='00000000-0000-0000-0000-000000000001',sid='00000000-0000-0000-0000-000000000011',otherSid='00000000-0000-0000-0000-000000000012';
+ try{
+  await pg.exec(`create role authenticated;create role anon;create schema auth;
+   create table auth.users(id uuid primary key,encrypted_password text);
+   create table auth.sessions(id uuid primary key,user_id uuid references auth.users(id));
+   create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;
+   create function auth.jwt() returns jsonb language sql stable as $$select jsonb_build_object('session_id',nullif(current_setting('request.jwt.claim.session_id',true),''))$$;
+   grant usage on schema auth to authenticated;`);
+  for(const file of ['schema.sql','002_academy_pricing.sql','003_qr_registration.sql','004_personal_details_registration.sql','005_multiple_membership_registration.sql','006_payment_security.sql'])await pg.exec(await readFile(`supabase/${file}`,'utf8'));
+  await pg.exec(`alter table public.members add column "membershipNumber" integer;
+   insert into auth.users values('${user}','unchanged-admin-hash');
+   insert into auth.sessions values('${sid}','${user}'),('${otherSid}','${user}');
+   insert into public.staff(id,name,email,role,"branchId") values('${user}','Admin','admin@example.test','SUPER ADMIN','dd');
+   insert into public.branches(id,name,code) values('bd','Hybrid BD','BD');
+   set request.jwt.claim.sub='${user}';set request.jwt.claim.session_id='${sid}';
+   insert into public.members(id,name,"branchId") values('dd-member','DD member','dd'),('bd-member','BD member','bd');
+   insert into public.memberships(id,"memberId","planId",start,expiry) values('dd-membership','dd-member','hybrid-boxing','2026-01-01','2026-02-01');`);
+  await pg.exec(await readFile('supabase/migrations/20261118090000_workspace_queries_and_conflicts.sql','utf8'));
+  await pg.exec(await readFile('supabase/migrations/20261122021643_branch_password_access.sql','utf8'));
+  await pg.exec(`insert into private.branch_credentials select id,extensions.crypt('branch-test-password',extensions.gen_salt('bf',4)) from public.branches;
+   set role authenticated;`);
+  await pg.exec('reset role');
+  await pg.exec(await readFile('supabase/migrations/20261122192012_retail_receipts_and_void.sql','utf8'));
+  await pg.exec(`insert into private.payment_credentials(user_id,password_hash) values('${user}',extensions.crypt('payments-test',extensions.gen_salt('bf',4)));set role authenticated;`);
+  await pg.query('select public.unlock_branch($1,$2)',['dd','branch-test-password']);
+  await pg.query('select public.unlock_payments($1)',['payments-test']);
+  const sale=async(id:string,branch='dd',amount=20)=>pg.query<{receiptNumber:string}>(`insert into public.payments(id,"branchId",amount,date,method,status,items) values($1,$2,$3,current_date,'Cash','Paid',$4::jsonb) returning "receiptNumber"`,[id,branch,amount,JSON.stringify([{description:'Handwraps',quantity:2,unitPrice:10}])]);
+  assert.equal((await sale('sale1')).rows[0].receiptNumber,'DD-000001');
+  await assert.rejects(sale('bad-total','dd',21),/Sale total/);
+  await assert.rejects(sale('cross','bd'),/Unlock/);
+  assert.equal((await sale('sale2')).rows[0].receiptNumber,'DD-000002','failed inserts consume no number');
+  await assert.rejects(pg.exec(`update payments set amount=1 where id='sale1'`),/Historical/);
+  await assert.rejects(pg.exec(`update payments set deleted=true where id='sale1'`),/Historical/);
+  await assert.rejects(pg.query('select public.void_payment($1,$2)',['sale1','']),/reason/);
+  await pg.exec(`reset role;update public.staff set role='STAFF' where id='${user}';set role authenticated;`);
+  await assert.rejects(pg.query('select public.void_payment($1,$2)',['sale1','Wrong collection']),/Admin/);
+  await pg.exec(`reset role;update public.staff set role='SUPER ADMIN' where id='${user}';set role authenticated;`);
+  await pg.query('select public.void_payment($1,$2)',['sale1','Wrong collection']);
+  const row=(await pg.query<{status:string;voidReason:string;voidedBy:string;receiptNumber:string;amount:number}>(`select * from payments where id='sale1'`)).rows[0];
+  assert.equal(row.status,'Void');assert.equal(row.voidReason,'Wrong collection');assert.equal(row.voidedBy,user);assert.equal(row.receiptNumber,'DD-000001');assert.equal(Number(row.amount),20);
+  await assert.rejects(pg.exec(`update payments set status='Paid' where id='sale1'`),/Voided/);
+  assert.equal((await sale('sale3')).rows[0].receiptNumber,'DD-000003');
+  await pg.query('select public.apply_changes_checked($1::jsonb)',[JSON.stringify([{table:'payments',id:'legacy-client',isNew:true,data:{id:'legacy-client',memberId:'dd-member',membershipId:'dd-membership',amount:170,date:'2026-11-23',method:'Cash',status:'Paid',reference:'',notes:''}}])]);
+  assert.equal((await pg.query<{receiptNumber:string}>(`select "receiptNumber" from payments where id='legacy-client'`)).rows[0].receiptNumber,'DD-000004','existing registration/payment writer stays compatible');
+  await pg.exec('reset role');
+  await assert.rejects(pg.exec(`delete from public.payments where id='sale1'`),/cannot be deleted/);
+  await pg.exec('set role authenticated');
+  await pg.query('select public.unlock_branch($1,$2)',['bd','branch-test-password']);
+  assert.equal((await sale('bd-sale','bd')).rows[0].receiptNumber,'BD-000001');
+  assert.deepEqual((await pg.query('select id from payments')).rows,[{id:'bd-sale'}]);
+ }finally{await pg.close();}
+});

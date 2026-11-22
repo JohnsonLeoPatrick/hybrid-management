@@ -18,7 +18,7 @@ export function ReceptionDashboard({db,members,open,navigate,paymentUnlocked,sav
  const expiring=members.flatMap(m=>currentMemberships(db,m.id).map(ms=>({m,ms}))).filter(({ms})=>status(ms)==='EXPIRING SOON').sort((a,b)=>a.ms.expiry.localeCompare(b.ms.expiry));
  const activeCount=members.filter(m=>['ACTIVE','EXPIRING SOON'].includes(memberStatus(db,m.id))).length;
  const activeShare=members.length?Math.round(activeCount/members.length*100):0;
- const unpaid=db.payments.filter(p=>p.status!=='Paid'&&members.some(m=>m.id===p.memberId));
+ const unpaid=db.payments.filter(p=>p.status!=='Paid'&&p.status!=='Void'&&members.some(m=>m.id===p.memberId));
  return <MotionConfig reducedMotion="user"><div className="dashboard-layout">
   <MemberCheckIn key={branch} {...{db,members,save,busy,open}}/>
   <AttendanceHistory key={'history-'+branch} branch={branch} members={members} revision={db.attendance.length}/>
