@@ -1,5 +1,9 @@
 # Daily reconciliation and reception permissions
 
+**Temporarily disabled at the user's request.** Do not restore daily reconciliation unless the user explicitly asks. Its implementation and database RPC remain available for restoration. Both the Overview shortcut and the reconciliation panel in Payments are removed. Payment requests remain available through the separate manager request inbox in Payments.
+
+To restore, import `DailyReconciliation` into `components/management.tsx` and render it in Payments with `branch`, `role`, and `paymentRevision={db.payments.map(p=>p.id+p.status).join(',')}`. Restore the Overview quick action linking to Payments in `components/reception-dashboard.tsx`. Recheck both branches and the limited STAFF view before deploying.
+
 Cross-check of the requested permissions: issuing and viewing e-receipts, immutable payment details, payment deletion prevention, admin voiding, and manager-only Reports already existed. This change adds staff void/refund requests, PDF sharing, daily reconciliation, manager-only ledger exports, and database-enforced admin-only payment updates.
 
 Both KIP and BD use the same code and database policies. Select a branch, open **Overview → Daily reconciliation** or **Payments → Open reconciliation**, and unlock Payments. The report defaults to today's Malaysia business date. Reception staff can see today's branch totals only. Managers can select an earlier date and enter actual cash, bank/QR, card, and other collections to see differences.

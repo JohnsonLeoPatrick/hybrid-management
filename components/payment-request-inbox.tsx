@@ -1,0 +1,10 @@
+'use client';
+import {useEffect,useState} from 'react';
+import {supabase} from '@/lib/supabase';
+type RequestRow={id:string;kind:string;reason:string;requested_at:string;payments:{receiptNumber:string}};
+
+export function PaymentRequestInbox({branch,paymentRevision}:{branch:string;paymentRevision:string}){
+ const [open,setOpen]=useState(false),[revision,setRevision]=useState(0),[rows,setRows]=useState<RequestRow[]>([]),[error,setError]=useState(''),[loading,setLoading]=useState(false);
+ useEffect(()=>{if(!open||!supabase)return;let active=true;setLoading(true);setError('');setRows([]);void supabase.from('payment_requests').select('id,kind,reason,requested_at,payments!inner(receiptNumber,branchId)').eq('status','Pending').eq('payments.branchId',branch).order('requested_at').limit(100).then(result=>{if(!active)return;if(result.error)setError(result.error.message);else setRows(result.data as unknown as RequestRow[]);setLoading(false);});return()=>{active=false;};},[open,branch,paymentRevision,revision]);
+ return <section className="panel" style={{padding:20,marginBottom:20}}><button className="secondary" onClick={()=>setOpen(value=>!value)}>{open?'Hide payment requests':'Review void / refund requests'}</button>{open&&<><h2>Pending void / refund requests</h2><button className="text-button" onClick={()=>setRevision(value=>value+1)}>Refresh requests</button><p>To approve, use the receipt's Void payment or Record full refund action in the ledger below.</p>{loading&&<p role="status">Loading requests...</p>}{error&&<p role="alert">{error}</p>}{rows.map(row=><div key={row.id} className="report-row"><span>{row.payments.receiptNumber} · {row.kind}<small>{row.reason}</small></span><button className="secondary" onClick={async()=>{const result=await supabase!.from('payment_requests').update({status:'Declined'}).eq('id',row.id);if(result.error)setError(result.error.message);else setRevision(value=>value+1);}}>Decline request</button></div>)}{!loading&&!error&&!rows.length&&<p>No pending requests.</p>}</>}</section>;
+}
