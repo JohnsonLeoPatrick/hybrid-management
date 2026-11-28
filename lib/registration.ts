@@ -1,5 +1,6 @@
 import type { RegistrationDetails } from '@/types/onboarding';
 import hybridForm from './hybrid-google-form.json';
+import { validateRegistrationPhoto } from './registration-photo';
 
 export const REGISTRATION_ORIGIN = 'https://register.hybridcombativegym.com';
 
@@ -17,6 +18,8 @@ export const REFERRAL_OPTIONS = ['I live nearby', 'Google', 'Family/Friends', 'S
 export function validateHybridRegistration(details: RegistrationDetails) {
  const invalid = validateRegistration(details);
  if (invalid) return invalid;
+ const photoError = validateRegistrationPhoto(details.photo);
+ if (photoError) return photoError;
  if (!details.email) return 'Enter your email address.';
  if (!/^\d{4}-\d{2}-\d{2}$/.test(details.dob) || Number.isNaN(Date.parse(details.dob)) || details.dob < '1900-01-01' || details.dob > new Date().toISOString().slice(0, 10)) return 'Enter a valid date of birth.';
  if (!details.address.trim()) return 'Enter your current address.';

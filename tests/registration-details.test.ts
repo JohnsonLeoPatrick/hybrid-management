@@ -19,3 +19,9 @@ test('QR review safely renders submitted text as text',()=>{
  const html=renderToStaticMarkup(React.createElement(RegistrationDetails,{request:{...request,notes:'<script>alert(1)</script>'}}));
  assert.ok(html.includes('&lt;script&gt;'));assert.ok(!html.includes('<script>'));
 });
+test('QR review shows the uploaded member photo',()=>{
+ const photo='data:image/jpeg;base64,/9j/2Q==';
+ const html=renderToStaticMarkup(React.createElement(RegistrationDetails,{request:{...request,photo}}));
+ assert.ok(html.includes(`src="${photo}"`));
+ assert.ok(html.includes('alt="Photo of Member"'));
+});
